@@ -33,6 +33,8 @@ Use the helper script:
 
 ## Safety rules
 - Never commit data/Sample or docs/planning (already gitignored).
+- Direct commits to main/develop are blocked by pre-commit hook (configured via core.hooksPath=.githooks).
+- If you must bypass in an emergency, use: git commit --no-verify (use rarely).
 - Before push, run:
 
 ```powershell

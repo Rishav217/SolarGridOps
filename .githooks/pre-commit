@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+
+if [ "$branch" = "main" ] || [ "$branch" = "develop" ]; then
+  echo "[BLOCKED] Direct commits to '$branch' are disabled."
+  echo "Create a branch with one of these prefixes: feature/, fix/, release/, hotfix/."
+  echo "Example: ./scripts/git/new-branch.ps1 -Type feature -Name your-change"
+  exit 1
+fi
+
+exit 0
