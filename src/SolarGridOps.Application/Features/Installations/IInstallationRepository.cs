@@ -10,4 +10,5 @@ public interface IInstallationRepository
     Task AddSessionAsync(InstallationSession session, CancellationToken cancellationToken = default);
     Task AddEvidenceAsync(InstallationEvidence evidence, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<InstallationEvidence>> ListEvidenceBySessionAsync(Guid sessionId, CancellationToken cancellationToken = default);
+    Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

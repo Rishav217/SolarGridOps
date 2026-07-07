@@ -37,6 +37,13 @@ public class ProjectRepository : IProjectRepository
             .FirstOrDefaultAsync(x => x.Id == projectId && !x.IsDeleted, cancellationToken);
     }
 
+    public Task<Project?> GetByIdForUpdateAsync(Guid projectId, CancellationToken cancellationToken = default)
+    {
+        return _dbContext.Projects
+            .Include(x => x.Customer)
+            .FirstOrDefaultAsync(x => x.Id == projectId && !x.IsDeleted, cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Project>> ListAsync(CancellationToken cancellationToken = default)
     {
         return await _dbContext.Projects
@@ -55,5 +62,10 @@ public class ProjectRepository : IProjectRepository
             .Where(x => x.CustomerId == customerId && !x.IsDeleted)
             .OrderByDescending(x => x.CreatedAtUtc)
             .ToListAsync(cancellationToken);
+    }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -74,6 +74,30 @@ public class ProjectService : IProjectService
         return Result<IReadOnlyList<ProjectDto>>.Success(projects.Select(Map).ToList());
     }
 
+    public async Task<Result<ProjectDto>> UpdatePhaseAsync(Guid projectId, UpdateProjectPhaseRequest request, CancellationToken cancellationToken = default)
+    {
+        var project = await _projectRepository.GetByIdForUpdateAsync(projectId, cancellationToken);
+        if (project is null)
+        {
+            return Result<ProjectDto>.Failure(Error.NotFound("Project not found."));
+        }
+
+        if ((int)request.CurrentPhase < (int)project.CurrentPhase)
+        {
+            return Result<ProjectDto>.Failure(Error.Validation("Project phase cannot move backwards."));
+        }
+
+        project.CurrentPhase = request.CurrentPhase;
+        project.InstallationStartDate = request.InstallationStartDate;
+        project.InstallationEndDate = request.InstallationEndDate;
+        project.Notes = request.Notes?.Trim();
+
+        await _projectRepository.SaveChangesAsync(cancellationToken);
+
+        var updated = await _projectRepository.GetByIdAsync(project.Id, cancellationToken);
+        return Result<ProjectDto>.Success(Map(updated!));
+    }
+
     private static ProjectDto Map(Project project)
     {
         return new ProjectDto

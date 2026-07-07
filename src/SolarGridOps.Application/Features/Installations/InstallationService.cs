@@ -81,6 +81,38 @@ public class InstallationService : IInstallationService
         return Result<IReadOnlyList<InstallationEvidenceDto>>.Success(evidenceItems.Select(Map).ToList());
     }
 
+    public async Task<Result<InstallationSessionDto>> UpdateSessionAsync(Guid sessionId, UpdateInstallationSessionRequest request, CancellationToken cancellationToken = default)
+    {
+        var session = await _installationRepository.GetSessionByIdAsync(sessionId, cancellationToken);
+        if (session is null)
+        {
+            return Result<InstallationSessionDto>.Failure(Error.NotFound("Installation session not found."));
+        }
+
+        if (request.TechnicianUserId.HasValue)
+        {
+            session.TechnicianUserId = request.TechnicianUserId;
+        }
+
+        if (request.SessionDateUtc.HasValue)
+        {
+            session.SessionDateUtc = request.SessionDateUtc.Value;
+        }
+
+        if (request.WorkSummary is not null)
+        {
+            session.WorkSummary = request.WorkSummary.Trim();
+        }
+
+        if (request.IsCompletedForDay.HasValue)
+        {
+            session.IsCompletedForDay = request.IsCompletedForDay.Value;
+        }
+
+        await _installationRepository.SaveChangesAsync(cancellationToken);
+        return Result<InstallationSessionDto>.Success(Map(session));
+    }
+
     private static InstallationSessionDto Map(InstallationSession session)
     {
         return new InstallationSessionDto
