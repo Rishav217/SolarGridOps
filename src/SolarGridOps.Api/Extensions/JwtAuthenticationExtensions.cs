@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SolarGridOps.Api.Security;
 using SolarGridOps.Infrastructure.Security;
 
 namespace SolarGridOps.Api.Extensions;
@@ -37,7 +38,17 @@ public static class JwtAuthenticationExtensions
                 };
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(PermissionPolicies.CustomersRead, policy =>
+                policy.RequireAuthenticatedUser().RequireClaim("perm", PermissionPolicies.CustomersRead));
+
+            options.AddPolicy(PermissionPolicies.CustomersCreate, policy =>
+                policy.RequireAuthenticatedUser().RequireClaim("perm", PermissionPolicies.CustomersCreate));
+
+            options.AddPolicy(PermissionPolicies.AuthCapabilities, policy =>
+                policy.RequireAuthenticatedUser().RequireClaim("perm", PermissionPolicies.AuthCapabilities));
+        });
 
         return services;
     }

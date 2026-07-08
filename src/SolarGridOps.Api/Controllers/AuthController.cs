@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGridOps.Api.Models;
+using SolarGridOps.Api.Security;
 using SolarGridOps.Application.Features.Auth;
 
 namespace SolarGridOps.Api.Controllers;
@@ -43,7 +44,7 @@ public class AuthController : ControllerBase
         return Ok(ApiResponse<AuthResponseDto>.Ok(result.Value!));
     }
 
-    [Authorize]
+    [Authorize(Policy = PermissionPolicies.AuthCapabilities)]
     [HttpGet("capabilities")]
     public async Task<ActionResult<ApiResponse<CapabilitiesDto>>> Capabilities(CancellationToken cancellationToken)
     {
