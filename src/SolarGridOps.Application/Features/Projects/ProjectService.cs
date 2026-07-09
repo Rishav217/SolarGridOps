@@ -87,10 +87,20 @@ public class ProjectService : IProjectService
             return Result<ProjectDto>.Failure(Error.Validation("Project phase cannot move backwards."));
         }
 
+        var nextStartDate = request.InstallationStartDate ?? project.InstallationStartDate;
+        var nextEndDate = request.InstallationEndDate ?? project.InstallationEndDate;
+        if (nextStartDate.HasValue && nextEndDate.HasValue && nextEndDate.Value < nextStartDate.Value)
+        {
+            return Result<ProjectDto>.Failure(Error.Validation("Installation end date cannot be before start date."));
+        }
+
         project.CurrentPhase = request.CurrentPhase;
-        project.InstallationStartDate = request.InstallationStartDate;
-        project.InstallationEndDate = request.InstallationEndDate;
-        project.Notes = request.Notes?.Trim();
+        project.InstallationStartDate = nextStartDate;
+        project.InstallationEndDate = nextEndDate;
+        if (request.Notes is not null)
+        {
+            project.Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
+        }
 
         await _projectRepository.SaveChangesAsync(cancellationToken);
 
