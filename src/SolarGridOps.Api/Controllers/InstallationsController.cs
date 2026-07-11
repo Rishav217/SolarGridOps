@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGridOps.Api.Models;
+using SolarGridOps.Api.Security;
 using SolarGridOps.Application.Features.Installations;
 
 namespace SolarGridOps.Api.Controllers;
@@ -18,6 +19,7 @@ public class InstallationsController : ControllerBase
     }
 
     [HttpGet("projects/{projectId:guid}/sessions")]
+    [Authorize(Policy = PermissionPolicies.InstallationsSessionsRead)]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<InstallationSessionDto>>>> ListSessionsByProject(Guid projectId, CancellationToken cancellationToken)
     {
         var result = await _installationService.ListSessionsByProjectAsync(projectId, cancellationToken);
@@ -30,6 +32,7 @@ public class InstallationsController : ControllerBase
     }
 
     [HttpPost("sessions")]
+    [Authorize(Policy = PermissionPolicies.InstallationsSessionsCreate)]
     public async Task<ActionResult<ApiResponse<InstallationSessionDto>>> CreateSession([FromBody] CreateInstallationSessionRequest request, CancellationToken cancellationToken)
     {
         var result = await _installationService.CreateSessionAsync(request, cancellationToken);
@@ -45,6 +48,7 @@ public class InstallationsController : ControllerBase
     }
 
     [HttpGet("sessions/{sessionId:guid}/evidence")]
+    [Authorize(Policy = PermissionPolicies.InstallationsEvidenceRead)]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<InstallationEvidenceDto>>>> ListEvidenceBySession(Guid sessionId, CancellationToken cancellationToken)
     {
         var result = await _installationService.ListEvidenceBySessionAsync(sessionId, cancellationToken);
@@ -57,6 +61,7 @@ public class InstallationsController : ControllerBase
     }
 
     [HttpPost("sessions/{sessionId:guid}/evidence")]
+    [Authorize(Policy = PermissionPolicies.InstallationsEvidenceCreate)]
     public async Task<ActionResult<ApiResponse<InstallationEvidenceDto>>> AddEvidence(Guid sessionId, [FromBody] AddInstallationEvidenceRequest request, CancellationToken cancellationToken)
     {
         var result = await _installationService.AddEvidenceAsync(sessionId, request, cancellationToken);
@@ -72,6 +77,7 @@ public class InstallationsController : ControllerBase
     }
 
     [HttpPatch("sessions/{sessionId:guid}")]
+    [Authorize(Policy = PermissionPolicies.InstallationsSessionsUpdate)]
     public async Task<ActionResult<ApiResponse<InstallationSessionDto>>> UpdateSession(Guid sessionId, [FromBody] UpdateInstallationSessionRequest request, CancellationToken cancellationToken)
     {
         var result = await _installationService.UpdateSessionAsync(sessionId, request, cancellationToken);
