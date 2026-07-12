@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SolarGridOps.Application.Features.Auth;
 using SolarGridOps.Application.Features.Customers;
 using SolarGridOps.Application.Features.Installations;
+using SolarGridOps.Application.Features.Projects;
 using SolarGridOps.Infrastructure.Persistence;
 using SolarGridOps.Infrastructure.Persistence.Repositories;
 using SolarGridOps.Infrastructure.Security;
@@ -30,6 +31,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IInstallationRepository, InstallationRepository>();
         services.AddScoped<IAuthRepository, AuthRepository>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
