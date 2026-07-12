@@ -1,7 +1,9 @@
 using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SolarGridOps.Api.Models;
 using SolarGridOps.Api.Security;
 using SolarGridOps.Infrastructure.Security;
 
@@ -35,6 +37,29 @@ public static class JwtAuthenticationExtensions
                     ValidAudience = jwt.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ClockSkew = TimeSpan.FromMinutes(1)
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = async context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+
+                        var payload = ApiResponse<object>.Fail("UNAUTHORIZED", "Authentication is required to access this resource.");
+                        var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                        await context.Response.WriteAsync(json);
+                    },
+                    OnForbidden = async context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        context.Response.ContentType = "application/json";
+
+                        var payload = ApiResponse<object>.Fail("FORBIDDEN", "You do not have permission to perform this action.");
+                        var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                        await context.Response.WriteAsync(json);
+                    }
                 };
             });
 
