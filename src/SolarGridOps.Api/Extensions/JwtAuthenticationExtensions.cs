@@ -60,6 +60,9 @@ public static class JwtAuthenticationExtensions
             options.AddPolicy(PermissionPolicies.InstallationsEvidenceRead, p => p.RequireClaim("perm", PermissionPolicies.InstallationsEvidenceRead));
             options.AddPolicy(PermissionPolicies.InstallationsEvidenceCreate, p => p.RequireClaim("perm", PermissionPolicies.InstallationsEvidenceCreate));
 
+            options.AddPolicy(PermissionPolicies.InventoryPanelsRead, p => p.RequireClaim("perm", PermissionPolicies.InventoryPanelsRead));
+            options.AddPolicy(PermissionPolicies.InventoryPanelsCreate, p => p.RequireClaim("perm", PermissionPolicies.InventoryPanelsCreate));
+
             options.AddPolicy(PermissionPolicies.AuthCapabilities, p => p.RequireClaim("perm", PermissionPolicies.AuthCapabilities));
         });
 

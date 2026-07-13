@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SolarGridOps.Application.Features.Auth;
 using SolarGridOps.Application.Features.Customers;
+using SolarGridOps.Application.Features.Inventory;
 using SolarGridOps.Application.Features.Installations;
 using SolarGridOps.Application.Features.Projects;
 
@@ -14,6 +15,7 @@ public static class DependencyInjection
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IInstallationService, InstallationService>();
+        services.AddScoped<IInventoryService, InventoryService>();
         return services;
     }
 }
