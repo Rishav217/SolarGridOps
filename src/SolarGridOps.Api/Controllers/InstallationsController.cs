@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGridOps.Api.Models;
 using SolarGridOps.Api.Security;
+using SolarGridOps.Application.Features.AuditTrail;
 using SolarGridOps.Application.Features.Installations;
 
 namespace SolarGridOps.Api.Controllers;
@@ -12,10 +14,12 @@ namespace SolarGridOps.Api.Controllers;
 public class InstallationsController : ControllerBase
 {
     private readonly IInstallationService _installationService;
+    private readonly IAuditTrailService _auditTrailService;
 
-    public InstallationsController(IInstallationService installationService)
+    public InstallationsController(IInstallationService installationService, IAuditTrailService auditTrailService)
     {
         _installationService = installationService;
+        _auditTrailService = auditTrailService;
     }
 
     [HttpGet("projects/{projectId:guid}/sessions")]
@@ -40,6 +44,8 @@ public class InstallationsController : ControllerBase
         {
             return NotFound(ApiResponse<InstallationSessionDto>.Fail(result.Error.Code, result.Error.Message));
         }
+
+        await RecordAuditAsync("installations.session.created", "installation_session", result.Value!.Id, $"projectId={result.Value.ProjectId};sessionDateUtc={result.Value.SessionDateUtc:O}", cancellationToken);
 
         return CreatedAtAction(
             nameof(ListSessionsByProject),
@@ -70,6 +76,8 @@ public class InstallationsController : ControllerBase
             return NotFound(ApiResponse<InstallationEvidenceDto>.Fail(result.Error.Code, result.Error.Message));
         }
 
+        await RecordAuditAsync("installations.evidence.created", "installation_evidence", result.Value!.Id, $"sessionId={sessionId};mediaType={result.Value.MediaType}", cancellationToken);
+
         return CreatedAtAction(
             nameof(ListEvidenceBySession),
             new { sessionId },
@@ -91,6 +99,19 @@ public class InstallationsController : ControllerBase
             return BadRequest(ApiResponse<InstallationSessionDto>.Fail(result.Error.Code, result.Error.Message));
         }
 
+        await RecordAuditAsync("installations.session.updated", "installation_session", result.Value!.Id, $"sessionDateUtc={result.Value.SessionDateUtc:O};completed={result.Value.IsCompletedForDay}", cancellationToken);
         return Ok(ApiResponse<InstallationSessionDto>.Ok(result.Value!));
+    }
+
+    private async Task RecordAuditAsync(string actionKey, string entityType, Guid entityId, string? details, CancellationToken cancellationToken)
+    {
+        var actorUserId = GetActorUserId();
+        await _auditTrailService.RecordAsync(actorUserId, actionKey, entityType, entityId, details, cancellationToken);
+    }
+
+    private Guid? GetActorUserId()
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(userIdClaim, out var userId) ? userId : null;
     }
 }

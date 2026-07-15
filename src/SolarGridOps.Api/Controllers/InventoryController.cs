@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGridOps.Api.Models;
 using SolarGridOps.Api.Security;
+using SolarGridOps.Application.Features.AuditTrail;
 using SolarGridOps.Application.Features.Inventory;
 
 namespace SolarGridOps.Api.Controllers;
@@ -13,11 +15,13 @@ public class InventoryController : ControllerBase
 {
     private readonly IInventoryService _inventoryService;
     private readonly IInverterInventoryService _inverterInventoryService;
+    private readonly IAuditTrailService _auditTrailService;
 
-    public InventoryController(IInventoryService inventoryService, IInverterInventoryService inverterInventoryService)
+    public InventoryController(IInventoryService inventoryService, IInverterInventoryService inverterInventoryService, IAuditTrailService auditTrailService)
     {
         _inventoryService = inventoryService;
         _inverterInventoryService = inverterInventoryService;
+        _auditTrailService = auditTrailService;
     }
 
     [HttpGet("projects/{projectId:guid}/panels")]
@@ -53,6 +57,7 @@ public class InventoryController : ControllerBase
             return BadRequest(ApiResponse<PanelInventoryDto>.Fail(result.Error.Code, result.Error.Message));
         }
 
+        await RecordAuditAsync("inventory.panel.created", "panel", result.Value!.Id, $"projectId={projectId};serial={result.Value.SerialNumber}", cancellationToken);
         return CreatedAtAction(nameof(ListPanelsByProject), new { projectId }, ApiResponse<PanelInventoryDto>.Ok(result.Value!));
     }
 
@@ -89,6 +94,7 @@ public class InventoryController : ControllerBase
             return BadRequest(ApiResponse<InverterInventoryDto>.Fail(result.Error.Code, result.Error.Message));
         }
 
+        await RecordAuditAsync("inventory.inverter.created", "inverter", result.Value!.Id, $"projectId={projectId};serial={result.Value.SerialNumber}", cancellationToken);
         return CreatedAtAction(nameof(ListInvertersByProject), new { projectId }, ApiResponse<InverterInventoryDto>.Ok(result.Value!));
     }
 
@@ -112,6 +118,7 @@ public class InventoryController : ControllerBase
             return BadRequest(ApiResponse<PanelInventoryDto>.Fail(result.Error.Code, result.Error.Message));
         }
 
+        await RecordAuditAsync("inventory.panel.updated", "panel", result.Value!.Id, $"serial={result.Value.SerialNumber}", cancellationToken);
         return Ok(ApiResponse<PanelInventoryDto>.Ok(result.Value!));
     }
 
@@ -125,6 +132,19 @@ public class InventoryController : ControllerBase
             return NotFound(ApiResponse<string>.Fail(result.Error.Code, result.Error.Message));
         }
 
+        await RecordAuditAsync("inventory.panel.deleted", "panel", panelId, null, cancellationToken);
         return NoContent();
+    }
+
+    private async Task RecordAuditAsync(string actionKey, string entityType, Guid entityId, string? details, CancellationToken cancellationToken)
+    {
+        var actorUserId = GetActorUserId();
+        await _auditTrailService.RecordAsync(actorUserId, actionKey, entityType, entityId, details, cancellationToken);
+    }
+
+    private Guid? GetActorUserId()
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(userIdClaim, out var userId) ? userId : null;
     }
 }

@@ -1,4 +1,5 @@
 using SolarGridOps.Application.Common;
+using SolarGridOps.Application.Features.Logging;
 using SolarGridOps.Domain.Entities;
 
 namespace SolarGridOps.Application.Features.Installations;
@@ -6,10 +7,12 @@ namespace SolarGridOps.Application.Features.Installations;
 public class InstallationService : IInstallationService
 {
     private readonly IInstallationRepository _installationRepository;
+    private readonly IAppLogService _appLogService;
 
-    public InstallationService(IInstallationRepository installationRepository)
+    public InstallationService(IInstallationRepository installationRepository, IAppLogService appLogService)
     {
         _installationRepository = installationRepository;
+        _appLogService = appLogService;
     }
 
     public async Task<Result<InstallationSessionDto>> CreateSessionAsync(CreateInstallationSessionRequest request, CancellationToken cancellationToken = default)
@@ -17,6 +20,7 @@ public class InstallationService : IInstallationService
         var projectExists = await _installationRepository.ProjectExistsAsync(request.ProjectId, cancellationToken);
         if (!projectExists)
         {
+            await _appLogService.WriteAsync("Warning", "installations.session.project_missing", "installations", "Project not found while creating installation session.", $"projectId={request.ProjectId}", cancellationToken: cancellationToken);
             return Result<InstallationSessionDto>.Failure(Error.NotFound("Project not found."));
         }
 
@@ -30,6 +34,7 @@ public class InstallationService : IInstallationService
         };
 
         await _installationRepository.AddSessionAsync(session, cancellationToken);
+        await _appLogService.WriteAsync("Information", "installations.session.created", "installations", "Installation session created.", $"projectId={session.ProjectId};sessionId={session.Id}", cancellationToken: cancellationToken);
         return Result<InstallationSessionDto>.Success(Map(session));
     }
 
@@ -38,6 +43,7 @@ public class InstallationService : IInstallationService
         var projectExists = await _installationRepository.ProjectExistsAsync(projectId, cancellationToken);
         if (!projectExists)
         {
+            await _appLogService.WriteAsync("Warning", "installations.session.project_missing", "installations", "Project not found while listing installation sessions.", $"projectId={projectId}", cancellationToken: cancellationToken);
             return Result<IReadOnlyList<InstallationSessionDto>>.Failure(Error.NotFound("Project not found."));
         }
 
@@ -50,6 +56,7 @@ public class InstallationService : IInstallationService
         var session = await _installationRepository.GetSessionByIdAsync(sessionId, cancellationToken);
         if (session is null)
         {
+            await _appLogService.WriteAsync("Warning", "installations.evidence.session_missing", "installations", "Installation session not found while adding evidence.", $"sessionId={sessionId}", cancellationToken: cancellationToken);
             return Result<InstallationEvidenceDto>.Failure(Error.NotFound("Installation session not found."));
         }
 
@@ -66,6 +73,7 @@ public class InstallationService : IInstallationService
         };
 
         await _installationRepository.AddEvidenceAsync(evidence, cancellationToken);
+        await _appLogService.WriteAsync("Information", "installations.evidence.created", "installations", "Installation evidence added.", $"sessionId={sessionId};mediaType={evidence.MediaType};fileName={evidence.FileName}", cancellationToken: cancellationToken);
         return Result<InstallationEvidenceDto>.Success(Map(evidence));
     }
 
@@ -74,6 +82,7 @@ public class InstallationService : IInstallationService
         var session = await _installationRepository.GetSessionByIdAsync(sessionId, cancellationToken);
         if (session is null)
         {
+            await _appLogService.WriteAsync("Warning", "installations.evidence.session_missing", "installations", "Installation session not found while listing evidence.", $"sessionId={sessionId}", cancellationToken: cancellationToken);
             return Result<IReadOnlyList<InstallationEvidenceDto>>.Failure(Error.NotFound("Installation session not found."));
         }
 
@@ -86,6 +95,7 @@ public class InstallationService : IInstallationService
         var session = await _installationRepository.GetSessionByIdAsync(sessionId, cancellationToken);
         if (session is null)
         {
+            await _appLogService.WriteAsync("Warning", "installations.session.session_missing", "installations", "Installation session not found while updating session.", $"sessionId={sessionId}", cancellationToken: cancellationToken);
             return Result<InstallationSessionDto>.Failure(Error.NotFound("Installation session not found."));
         }
 
@@ -110,6 +120,7 @@ public class InstallationService : IInstallationService
         }
 
         await _installationRepository.SaveChangesAsync(cancellationToken);
+        await _appLogService.WriteAsync("Information", "installations.session.updated", "installations", "Installation session updated.", $"sessionId={session.Id};completed={session.IsCompletedForDay}", cancellationToken: cancellationToken);
         return Result<InstallationSessionDto>.Success(Map(session));
     }
 
