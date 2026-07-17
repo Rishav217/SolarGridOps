@@ -129,6 +129,10 @@ public class AppDbContext : DbContext
         {
             e.HasKey(x => x.Id);
             e.Property(x => x.WorkSummary).HasMaxLength(1000);
+            e.Property(x => x.CustomerSignatureName).HasMaxLength(120);
+            e.Property(x => x.CustomerSignatureBase64).HasMaxLength(8000);
+            e.Property(x => x.ClosureNotes).HasMaxLength(1000);
+            e.HasIndex(x => new { x.ProjectId, x.ClosureStatus });
 
             e.HasOne(x => x.Project)
                 .WithMany(x => x.InstallationSessions)

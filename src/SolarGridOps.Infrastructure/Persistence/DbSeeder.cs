@@ -26,6 +26,8 @@ public static class DbSeeder
             ("installations.sessions.update", "Update Installation Sessions"),
             ("installations.evidence.read", "Read Installation Evidence"),
             ("installations.evidence.create", "Create Installation Evidence"),
+            ("installations.closure.request", "Request Installation Closure"),
+            ("installations.closure.approve", "Approve Installation Closure"),
             ("inventory.panels.read", "Read Inventory Panels"),
             ("inventory.panels.create", "Create Inventory Panels"),
             ("inventory.panels.update", "Update Inventory Panels"),
