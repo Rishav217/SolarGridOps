@@ -44,6 +44,19 @@ public class AuthController : ControllerBase
         return Ok(ApiResponse<AuthResponseDto>.Ok(result.Value!));
     }
 
+    [Authorize(Policy = PermissionPolicies.AuthLogout)]
+    [HttpPost("logout")]
+    public async Task<ActionResult<ApiResponse<object>>> Logout([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _authService.LogoutAsync(request, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return BadRequest(ApiResponse<object>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(ApiResponse<object>.Ok(new { message = "Logged out." }));
+    }
+
     [Authorize(Policy = PermissionPolicies.AuthCapabilities)]
     [HttpGet("capabilities")]
     public async Task<ActionResult<ApiResponse<CapabilitiesDto>>> Capabilities(CancellationToken cancellationToken)

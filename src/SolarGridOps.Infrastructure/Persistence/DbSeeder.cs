@@ -14,54 +14,95 @@ public static class DbSeeder
 
         await db.Database.MigrateAsync(cancellationToken);
 
-        if (await db.Users.AnyAsync(cancellationToken))
+        var requiredPermissions = new Dictionary<string, string>
         {
-            return;
+            ["customers.read"] = "Read Customers",
+            ["customers.create"] = "Create Customers",
+            ["auth.capabilities"] = "Read Capabilities",
+            ["auth.logout"] = "Logout"
+        };
+
+        var existingPermissions = await db.Permissions
+            .Where(x => requiredPermissions.Keys.Contains(x.PermissionKey))
+            .ToDictionaryAsync(x => x.PermissionKey, cancellationToken);
+
+        foreach (var item in requiredPermissions)
+        {
+            if (existingPermissions.ContainsKey(item.Key))
+            {
+                continue;
+            }
+
+            var permission = new Permission
+            {
+                PermissionKey = item.Key,
+                DisplayName = item.Value
+            };
+
+            await db.Permissions.AddAsync(permission, cancellationToken);
+            existingPermissions[item.Key] = permission;
         }
 
-        var permissions = new[]
+        var role = await db.Roles.FirstOrDefaultAsync(x => x.RoleKey == "owner_admin", cancellationToken);
+        if (role is null)
         {
-            new Permission { PermissionKey = "customers.read", DisplayName = "Read Customers" },
-            new Permission { PermissionKey = "customers.create", DisplayName = "Create Customers" },
-            new Permission { PermissionKey = "auth.capabilities", DisplayName = "Read Capabilities" }
-        };
+            role = new Role
+            {
+                RoleKey = "owner_admin",
+                DisplayName = "Owner Admin",
+                RoleType = RoleType.OwnerAdmin
+            };
 
-        var role = new Role
+            await db.Roles.AddAsync(role, cancellationToken);
+        }
+
+        var user = await db.Users.FirstOrDefaultAsync(x => x.MobileNumber == "9999999999", cancellationToken);
+        if (user is null)
         {
-            RoleKey = "owner_admin",
-            DisplayName = "Owner Admin",
-            RoleType = RoleType.OwnerAdmin
-        };
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123");
+            user = new User
+            {
+                FullName = "Owner Admin",
+                MobileNumber = "9999999999",
+                Email = "owner@solargridops.local",
+                PasswordHash = passwordHash,
+                IsActive = true
+            };
 
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123");
-        var user = new User
-        {
-            FullName = "Owner Admin",
-            MobileNumber = "9999999999",
-            Email = "owner@solargridops.local",
-            PasswordHash = passwordHash,
-            IsActive = true
-        };
+            await db.Users.AddAsync(user, cancellationToken);
+        }
 
-        db.Permissions.AddRange(permissions);
-        db.Roles.Add(role);
-        db.Users.Add(user);
         await db.SaveChangesAsync(cancellationToken);
 
-        foreach (var permission in permissions)
+        var existingRolePermissionIds = await db.RolePermissions
+            .Where(x => x.RoleId == role.Id)
+            .Select(x => x.PermissionId)
+            .ToListAsync(cancellationToken);
+
+        foreach (var permission in existingPermissions.Values)
         {
-            db.RolePermissions.Add(new RolePermission
+            if (existingRolePermissionIds.Contains(permission.Id))
+            {
+                continue;
+            }
+
+            await db.RolePermissions.AddAsync(new RolePermission
             {
                 RoleId = role.Id,
                 PermissionId = permission.Id
-            });
+            }, cancellationToken);
         }
 
-        db.UserRoles.Add(new UserRole
+        var hasUserRole = await db.UserRoles
+            .AnyAsync(x => x.UserId == user.Id && x.RoleId == role.Id, cancellationToken);
+        if (!hasUserRole)
         {
-            UserId = user.Id,
-            RoleId = role.Id
-        });
+            await db.UserRoles.AddAsync(new UserRole
+            {
+                UserId = user.Id,
+                RoleId = role.Id
+            }, cancellationToken);
+        }
 
         await db.SaveChangesAsync(cancellationToken);
     }

@@ -20,6 +20,14 @@ public static class JwtAuthenticationExtensions
         {
             throw new InvalidOperationException("Jwt:Secret is missing from configuration.");
         }
+        if (jwt.Secret.Length < 32)
+        {
+            throw new InvalidOperationException("Jwt:Secret must be at least 32 characters.");
+        }
+        if (string.IsNullOrWhiteSpace(jwt.Issuer) || string.IsNullOrWhiteSpace(jwt.Audience))
+        {
+            throw new InvalidOperationException("Jwt:Issuer and Jwt:Audience must be configured.");
+        }
 
         var key = Encoding.UTF8.GetBytes(jwt.Secret);
 
@@ -65,6 +73,11 @@ public static class JwtAuthenticationExtensions
 
         services.AddAuthorization(options =>
         {
+            options.DefaultPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+            options.FallbackPolicy = options.DefaultPolicy;
+
             options.AddPolicy(PermissionPolicies.CustomersRead, policy =>
                 policy.RequireAuthenticatedUser().RequireClaim("perm", PermissionPolicies.CustomersRead));
 
@@ -73,6 +86,9 @@ public static class JwtAuthenticationExtensions
 
             options.AddPolicy(PermissionPolicies.AuthCapabilities, policy =>
                 policy.RequireAuthenticatedUser().RequireClaim("perm", PermissionPolicies.AuthCapabilities));
+
+            options.AddPolicy(PermissionPolicies.AuthLogout, policy =>
+                policy.RequireAuthenticatedUser().RequireClaim("perm", PermissionPolicies.AuthLogout));
         });
 
         return services;

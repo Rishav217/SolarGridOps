@@ -113,6 +113,28 @@ public class AuthService : IAuthService
         });
     }
 
+    public async Task<Result> LogoutAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default)
+    {
+        var providedToken = request.RefreshToken.Trim();
+        var providedHash = HashRefreshToken(providedToken);
+
+        var existing = await _authRepository.GetRefreshTokenAsync(providedHash, cancellationToken);
+        if (existing is null)
+        {
+            // Idempotent logout to avoid token enumeration.
+            return Result.Success();
+        }
+
+        if (existing.RevokedAtUtc is null)
+        {
+            existing.RevokedAtUtc = DateTime.UtcNow;
+            existing.RevokeReason = "Logout";
+            await _authRepository.SaveChangesAsync(cancellationToken);
+        }
+
+        return Result.Success();
+    }
+
     public async Task<Result<CapabilitiesDto>> GetCapabilitiesAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _authRepository.GetByIdWithSecurityAsync(userId, cancellationToken);

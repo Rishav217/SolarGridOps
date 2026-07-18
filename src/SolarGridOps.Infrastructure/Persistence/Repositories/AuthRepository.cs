@@ -43,6 +43,12 @@ public class AuthRepository : IAuthRepository
                 cancellationToken);
     }
 
+    public Task<RefreshToken?> GetRefreshTokenAsync(string refreshTokenHash, CancellationToken cancellationToken = default)
+    {
+        return _dbContext.RefreshTokens
+            .FirstOrDefaultAsync(x => x.TokenHash == refreshTokenHash, cancellationToken);
+    }
+
     public async Task AddRefreshTokenAsync(RefreshToken refreshToken, CancellationToken cancellationToken = default)
     {
         await _dbContext.RefreshTokens.AddAsync(refreshToken, cancellationToken);
