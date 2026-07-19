@@ -142,6 +142,133 @@ public class InventoryEndpointsTests : IClassFixture<TestWebApplicationFactory>
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+    [Fact]
+    public async Task RecordMovement_AndListByProject_ReturnsMovement()
+    {
+        await AuthorizeAsync();
+        var customerId = await CreateCustomerAsync();
+        var projectId = await CreateProjectAsync(customerId, ProjectPhase.Installation);
+
+        var panelCreateResponse = await PostJsonAsync($"/api/v1/inventory/projects/{projectId}/panels", new
+        {
+            serialNumber = $"IT-MOV-PNL-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}",
+            wattage = 545,
+            brand = "SunPrime"
+        });
+        panelCreateResponse.EnsureSuccessStatusCode();
+        var panelId = await ExtractIdAsync(panelCreateResponse);
+
+        var movementCreateResponse = await PostJsonAsync("/api/v1/inventory/stock-movements", new
+        {
+            projectId,
+            itemId = panelId,
+            itemType = "panel",
+            movementType = "out",
+            quantity = 6,
+            unitCostPrice = 10800.50m,
+            unitSellPrice = 12500.00m,
+            notes = "Installed at site"
+        });
+
+        Assert.Equal(HttpStatusCode.OK, movementCreateResponse.StatusCode);
+
+        var listResponse = await _client.GetAsync($"/api/v1/inventory/projects/{projectId}/stock-movements");
+        Assert.Equal(HttpStatusCode.OK, listResponse.StatusCode);
+
+        var payload = await listResponse.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(payload);
+        var movements = doc.RootElement.GetProperty("data");
+
+        var movement = movements.EnumerateArray()
+            .FirstOrDefault(x => x.GetProperty("itemId").GetGuid() == panelId && x.GetProperty("movementType").GetString() == "out");
+
+        Assert.NotEqual(JsonValueKind.Undefined, movement.ValueKind);
+        Assert.Equal(6, movement.GetProperty("quantity").GetInt32());
+        Assert.Equal(10800.50m, movement.GetProperty("unitCostPrice").GetDecimal());
+        Assert.Equal(12500.00m, movement.GetProperty("unitSellPrice").GetDecimal());
+    }
+
+    [Fact]
+    public async Task ListPanelMovements_ReturnsOnlyPanelHistory()
+    {
+        await AuthorizeAsync();
+        var customerId = await CreateCustomerAsync();
+        var projectId = await CreateProjectAsync(customerId, ProjectPhase.Installation);
+
+        var panelAResponse = await PostJsonAsync($"/api/v1/inventory/projects/{projectId}/panels", new
+        {
+            serialNumber = $"IT-MOV-A-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}",
+            wattage = 545
+        });
+        panelAResponse.EnsureSuccessStatusCode();
+        var panelAId = await ExtractIdAsync(panelAResponse);
+
+        var panelBResponse = await PostJsonAsync($"/api/v1/inventory/projects/{projectId}/panels", new
+        {
+            serialNumber = $"IT-MOV-B-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}",
+            wattage = 545
+        });
+        panelBResponse.EnsureSuccessStatusCode();
+        var panelBId = await ExtractIdAsync(panelBResponse);
+
+        var movementA = await PostJsonAsync("/api/v1/inventory/stock-movements", new
+        {
+            projectId,
+            itemId = panelAId,
+            itemType = "panel",
+            movementType = "in",
+            quantity = 10
+        });
+        movementA.EnsureSuccessStatusCode();
+
+        var movementB = await PostJsonAsync("/api/v1/inventory/stock-movements", new
+        {
+            projectId,
+            itemId = panelBId,
+            itemType = "panel",
+            movementType = "in",
+            quantity = 8
+        });
+        movementB.EnsureSuccessStatusCode();
+
+        var historyResponse = await _client.GetAsync($"/api/v1/inventory/panels/{panelAId}/movements");
+        Assert.Equal(HttpStatusCode.OK, historyResponse.StatusCode);
+
+        var payload = await historyResponse.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(payload);
+        var items = doc.RootElement.GetProperty("data").EnumerateArray().ToList();
+
+        Assert.True(items.Count >= 1);
+        Assert.All(items, x => Assert.Equal(panelAId, x.GetProperty("itemId").GetGuid()));
+    }
+
+    [Fact]
+    public async Task RecordMovement_WithInvalidMovementType_ReturnsBadRequest()
+    {
+        await AuthorizeAsync();
+        var customerId = await CreateCustomerAsync();
+        var projectId = await CreateProjectAsync(customerId, ProjectPhase.Installation);
+
+        var panelResponse = await PostJsonAsync($"/api/v1/inventory/projects/{projectId}/panels", new
+        {
+            serialNumber = $"IT-MOV-INV-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}",
+            wattage = 550
+        });
+        panelResponse.EnsureSuccessStatusCode();
+        var panelId = await ExtractIdAsync(panelResponse);
+
+        var response = await PostJsonAsync("/api/v1/inventory/stock-movements", new
+        {
+            projectId,
+            itemId = panelId,
+            itemType = "panel",
+            movementType = "ship",
+            quantity = 1
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     private async Task AuthorizeAsync()
     {
         var loginResponse = await PostJsonAsync("/api/v1/auth/login", new
