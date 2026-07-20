@@ -55,4 +55,9 @@ public class InstallationRepository : IInstallationRepository
             .OrderByDescending(x => x.CapturedAtUtc)
             .ToListAsync(cancellationToken);
     }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

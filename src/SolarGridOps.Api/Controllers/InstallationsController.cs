@@ -70,4 +70,21 @@ public class InstallationsController : ControllerBase
             new { sessionId },
             ApiResponse<InstallationEvidenceDto>.Ok(result.Value!));
     }
+
+    [HttpPatch("sessions/{sessionId:guid}")]
+    public async Task<ActionResult<ApiResponse<InstallationSessionDto>>> UpdateSession(Guid sessionId, [FromBody] UpdateInstallationSessionRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _installationService.UpdateSessionAsync(sessionId, request, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            if (result.Error.Code == "NOT_FOUND")
+            {
+                return NotFound(ApiResponse<InstallationSessionDto>.Fail(result.Error.Code, result.Error.Message));
+            }
+
+            return BadRequest(ApiResponse<InstallationSessionDto>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(ApiResponse<InstallationSessionDto>.Ok(result.Value!));
+    }
 }

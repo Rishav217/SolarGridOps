@@ -67,4 +67,21 @@ public class ProjectsController : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, ApiResponse<ProjectDto>.Ok(result.Value));
     }
+
+    [HttpPatch("{id:guid}/phase")]
+    public async Task<ActionResult<ApiResponse<ProjectDto>>> UpdatePhase(Guid id, [FromBody] UpdateProjectPhaseRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _projectService.UpdatePhaseAsync(id, request, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            if (result.Error.Code == "NOT_FOUND")
+            {
+                return NotFound(ApiResponse<ProjectDto>.Fail(result.Error.Code, result.Error.Message));
+            }
+
+            return BadRequest(ApiResponse<ProjectDto>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(ApiResponse<ProjectDto>.Ok(result.Value!));
+    }
 }
