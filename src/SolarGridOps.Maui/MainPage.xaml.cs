@@ -1,23 +1,34 @@
-﻿namespace SolarGridOps.Maui;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SolarGridOps.Maui.Services;
+
+namespace SolarGridOps.Maui;
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+	private readonly SessionState _sessionState;
 
 	public MainPage()
 	{
 		InitializeComponent();
+		_sessionState = App.Services.GetRequiredService<SessionState>();
 	}
 
-	private void OnCounterClicked(object? sender, EventArgs e)
+	protected override void OnAppearing()
 	{
-		count++;
+		base.OnAppearing();
+		WelcomeLabel.Text = string.IsNullOrWhiteSpace(_sessionState.UserFullName)
+			? "Welcome"
+			: $"Welcome, {_sessionState.UserFullName}";
+	}
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
+	private async void OnWorkspaceClicked(object? sender, EventArgs e)
+	{
+		await Shell.Current.GoToAsync("//app/workspace");
+	}
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
+	private async void OnSignOutClicked(object? sender, EventArgs e)
+	{
+		_sessionState.Clear();
+		await Shell.Current.GoToAsync("//login");
 	}
 }
