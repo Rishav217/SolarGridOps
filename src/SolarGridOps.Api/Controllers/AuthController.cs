@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SolarGridOps.Api.Models;
 using SolarGridOps.Api.Security;
 using SolarGridOps.Application.Features.Auth;
@@ -19,6 +20,7 @@ public class AuthController : ControllerBase
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting("auth-login")]
     [HttpPost("login")]
     public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
@@ -32,6 +34,7 @@ public class AuthController : ControllerBase
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting("auth-refresh")]
     [HttpPost("refresh")]
     public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
     {
@@ -45,6 +48,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize(Policy = PermissionPolicies.AuthLogout)]
+    [EnableRateLimiting("auth-logout")]
     [HttpPost("logout")]
     public async Task<ActionResult<ApiResponse<object>>> Logout([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
     {
