@@ -7,6 +7,9 @@ public class UpdateProjectPhaseRequestValidator : BaseValidator<UpdateProjectPha
 {
     public UpdateProjectPhaseRequestValidator()
     {
+        RuleFor(x => x.CurrentPhase)
+            .IsInEnum();
+
         RuleFor(x => x.Notes).MaximumLength(1000);
         RuleFor(x => x.InstallationEndDate)
             .GreaterThanOrEqualTo(x => x.InstallationStartDate!.Value)
