@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SolarGridOps.Maui.Services;
 
 namespace SolarGridOps.Maui;
 
@@ -14,6 +15,16 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
+
+		var apiBaseAddress = DeviceInfo.Platform == DevicePlatform.Android
+			? "http://10.0.2.2:5014/"
+			: "http://localhost:5014/";
+
+		builder.Services.AddSingleton(new HttpClient
+		{
+			BaseAddress = new Uri(apiBaseAddress)
+		});
+		builder.Services.AddTransient<InventoryApiClient>();
 
 #if DEBUG
 		builder.Logging.AddDebug();
