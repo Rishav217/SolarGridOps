@@ -53,4 +53,40 @@ public class InventoryController : ControllerBase
 
         return CreatedAtAction(nameof(ListPanelsByProject), new { projectId }, ApiResponse<PanelInventoryDto>.Ok(result.Value!));
     }
+
+    [HttpPatch("panels/{panelId:guid}")]
+    [Authorize(Policy = PermissionPolicies.InventoryPanelsUpdate)]
+    public async Task<ActionResult<ApiResponse<PanelInventoryDto>>> UpdatePanel(Guid panelId, [FromBody] UpdatePanelInventoryRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _inventoryService.UpdatePanelAsync(panelId, request, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            if (result.Error.Code == "CONFLICT")
+            {
+                return Conflict(ApiResponse<PanelInventoryDto>.Fail(result.Error.Code, result.Error.Message));
+            }
+
+            if (result.Error.Code == "NOT_FOUND")
+            {
+                return NotFound(ApiResponse<PanelInventoryDto>.Fail(result.Error.Code, result.Error.Message));
+            }
+
+            return BadRequest(ApiResponse<PanelInventoryDto>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(ApiResponse<PanelInventoryDto>.Ok(result.Value!));
+    }
+
+    [HttpDelete("panels/{panelId:guid}")]
+    [Authorize(Policy = PermissionPolicies.InventoryPanelsDelete)]
+    public async Task<IActionResult> RemovePanel(Guid panelId, CancellationToken cancellationToken)
+    {
+        var result = await _inventoryService.RemovePanelAsync(panelId, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return NotFound(ApiResponse<string>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        return NoContent();
+    }
 }

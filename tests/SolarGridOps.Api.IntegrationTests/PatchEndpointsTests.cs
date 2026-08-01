@@ -6,6 +6,7 @@ using SolarGridOps.Domain.Enums;
 
 namespace SolarGridOps.Api.IntegrationTests;
 
+[Collection("ApiIntegration")]
 public class PatchEndpointsTests : IClassFixture<TestWebApplicationFactory>
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
