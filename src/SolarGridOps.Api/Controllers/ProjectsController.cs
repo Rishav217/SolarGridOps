@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGridOps.Api.Models;
+using SolarGridOps.Api.Security;
 using SolarGridOps.Application.Features.Projects;
 
 namespace SolarGridOps.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/projects")]
+[Authorize]
 public class ProjectsController : ControllerBase
 {
     private readonly IProjectService _projectService;
@@ -16,6 +19,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = PermissionPolicies.ProjectsRead)]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<ProjectDto>>>> List(CancellationToken cancellationToken)
     {
         var result = await _projectService.ListAsync(cancellationToken);
@@ -23,6 +27,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = PermissionPolicies.ProjectsRead)]
     public async Task<ActionResult<ApiResponse<ProjectDto>>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await _projectService.GetByIdAsync(id, cancellationToken);
@@ -35,6 +40,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet("by-customer/{customerId:guid}")]
+    [Authorize(Policy = PermissionPolicies.ProjectsRead)]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<ProjectDto>>>> ListByCustomer(Guid customerId, CancellationToken cancellationToken)
     {
         var result = await _projectService.ListByCustomerAsync(customerId, cancellationToken);
@@ -47,6 +53,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = PermissionPolicies.ProjectsCreate)]
     public async Task<ActionResult<ApiResponse<ProjectDto>>> Create([FromBody] CreateProjectRequest request, CancellationToken cancellationToken)
     {
         var result = await _projectService.CreateAsync(request, cancellationToken);
@@ -69,6 +76,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPatch("{id:guid}/phase")]
+    [Authorize(Policy = PermissionPolicies.ProjectsUpdatePhase)]
     public async Task<ActionResult<ApiResponse<ProjectDto>>> UpdatePhase(Guid id, [FromBody] UpdateProjectPhaseRequest request, CancellationToken cancellationToken)
     {
         var result = await _projectService.UpdatePhaseAsync(id, request, cancellationToken);

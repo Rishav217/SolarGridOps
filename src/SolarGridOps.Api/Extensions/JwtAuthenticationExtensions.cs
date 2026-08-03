@@ -1,7 +1,9 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SolarGridOps.Api.Security;
 using SolarGridOps.Infrastructure.Security;
 
 namespace SolarGridOps.Api.Extensions;
@@ -37,7 +39,29 @@ public static class JwtAuthenticationExtensions
                 };
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+
+            options.FallbackPolicy = options.DefaultPolicy;
+
+            options.AddPolicy(PermissionPolicies.CustomersRead, p => p.RequireClaim("perm", PermissionPolicies.CustomersRead));
+            options.AddPolicy(PermissionPolicies.CustomersCreate, p => p.RequireClaim("perm", PermissionPolicies.CustomersCreate));
+
+            options.AddPolicy(PermissionPolicies.ProjectsRead, p => p.RequireClaim("perm", PermissionPolicies.ProjectsRead));
+            options.AddPolicy(PermissionPolicies.ProjectsCreate, p => p.RequireClaim("perm", PermissionPolicies.ProjectsCreate));
+            options.AddPolicy(PermissionPolicies.ProjectsUpdatePhase, p => p.RequireClaim("perm", PermissionPolicies.ProjectsUpdatePhase));
+
+            options.AddPolicy(PermissionPolicies.InstallationsSessionsRead, p => p.RequireClaim("perm", PermissionPolicies.InstallationsSessionsRead));
+            options.AddPolicy(PermissionPolicies.InstallationsSessionsCreate, p => p.RequireClaim("perm", PermissionPolicies.InstallationsSessionsCreate));
+            options.AddPolicy(PermissionPolicies.InstallationsSessionsUpdate, p => p.RequireClaim("perm", PermissionPolicies.InstallationsSessionsUpdate));
+            options.AddPolicy(PermissionPolicies.InstallationsEvidenceRead, p => p.RequireClaim("perm", PermissionPolicies.InstallationsEvidenceRead));
+            options.AddPolicy(PermissionPolicies.InstallationsEvidenceCreate, p => p.RequireClaim("perm", PermissionPolicies.InstallationsEvidenceCreate));
+
+            options.AddPolicy(PermissionPolicies.AuthCapabilities, p => p.RequireClaim("perm", PermissionPolicies.AuthCapabilities));
+        });
 
         return services;
     }
