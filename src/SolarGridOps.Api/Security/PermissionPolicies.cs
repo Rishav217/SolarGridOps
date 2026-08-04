@@ -15,5 +15,8 @@ public static class PermissionPolicies
     public const string InstallationsEvidenceRead = "installations.evidence.read";
     public const string InstallationsEvidenceCreate = "installations.evidence.create";
 
+    public const string InventoryPanelsRead = "inventory.panels.read";
+    public const string InventoryPanelsCreate = "inventory.panels.create";
+
     public const string AuthCapabilities = "auth.capabilities";
 }
