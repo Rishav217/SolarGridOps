@@ -20,5 +20,8 @@ public static class PermissionPolicies
     public const string InventoryPanelsUpdate = "inventory.panels.update";
     public const string InventoryPanelsDelete = "inventory.panels.delete";
 
+    public const string InventoryInvertersRead = "inventory.inverters.read";
+    public const string InventoryInvertersCreate = "inventory.inverters.create";
+
     public const string AuthCapabilities = "auth.capabilities";
 }
