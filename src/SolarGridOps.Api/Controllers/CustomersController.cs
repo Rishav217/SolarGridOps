@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGridOps.Api.Models;
+using SolarGridOps.Api.Security;
 using SolarGridOps.Application.Features.Customers;
 
 namespace SolarGridOps.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/customers")]
+[Authorize]
 public class CustomersController : ControllerBase
 {
     private readonly ICustomerService _customerService;
@@ -16,6 +19,7 @@ public class CustomersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = PermissionPolicies.CustomersRead)]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<CustomerDto>>>> GetAll(CancellationToken cancellationToken)
     {
         var result = await _customerService.ListAsync(cancellationToken);
@@ -23,6 +27,7 @@ public class CustomersController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = PermissionPolicies.CustomersRead)]
     public async Task<ActionResult<ApiResponse<CustomerDto>>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await _customerService.GetByIdAsync(id, cancellationToken);
@@ -35,6 +40,7 @@ public class CustomersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = PermissionPolicies.CustomersCreate)]
     public async Task<ActionResult<ApiResponse<CustomerDto>>> Create([FromBody] CreateCustomerRequest request, CancellationToken cancellationToken)
     {
         var result = await _customerService.CreateAsync(request, cancellationToken);
