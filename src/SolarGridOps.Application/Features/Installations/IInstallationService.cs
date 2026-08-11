@@ -9,4 +9,6 @@ public interface IInstallationService
     Task<Result<InstallationEvidenceDto>> AddEvidenceAsync(Guid sessionId, AddInstallationEvidenceRequest request, CancellationToken cancellationToken = default);
     Task<Result<IReadOnlyList<InstallationEvidenceDto>>> ListEvidenceBySessionAsync(Guid sessionId, CancellationToken cancellationToken = default);
     Task<Result<InstallationSessionDto>> UpdateSessionAsync(Guid sessionId, UpdateInstallationSessionRequest request, CancellationToken cancellationToken = default);
+    Task<Result<InstallationSessionDto>> RequestClosureAsync(Guid sessionId, RequestInstallationClosureRequest request, Guid actorUserId, CancellationToken cancellationToken = default);
+    Task<Result<InstallationSessionDto>> ApproveClosureAsync(Guid sessionId, Guid actorUserId, CancellationToken cancellationToken = default);
 }

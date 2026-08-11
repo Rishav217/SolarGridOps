@@ -14,6 +14,8 @@ public static class PermissionPolicies
     public const string InstallationsSessionsUpdate = "installations.sessions.update";
     public const string InstallationsEvidenceRead = "installations.evidence.read";
     public const string InstallationsEvidenceCreate = "installations.evidence.create";
+    public const string InstallationsClosureRequest = "installations.closure.request";
+    public const string InstallationsClosureApprove = "installations.closure.approve";
 
     public const string InventoryPanelsRead = "inventory.panels.read";
     public const string InventoryPanelsCreate = "inventory.panels.create";

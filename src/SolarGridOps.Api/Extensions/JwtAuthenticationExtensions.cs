@@ -59,6 +59,8 @@ public static class JwtAuthenticationExtensions
             options.AddPolicy(PermissionPolicies.InstallationsSessionsUpdate, p => p.RequireClaim("perm", PermissionPolicies.InstallationsSessionsUpdate));
             options.AddPolicy(PermissionPolicies.InstallationsEvidenceRead, p => p.RequireClaim("perm", PermissionPolicies.InstallationsEvidenceRead));
             options.AddPolicy(PermissionPolicies.InstallationsEvidenceCreate, p => p.RequireClaim("perm", PermissionPolicies.InstallationsEvidenceCreate));
+            options.AddPolicy(PermissionPolicies.InstallationsClosureRequest, p => p.RequireClaim("perm", PermissionPolicies.InstallationsClosureRequest));
+            options.AddPolicy(PermissionPolicies.InstallationsClosureApprove, p => p.RequireClaim("perm", PermissionPolicies.InstallationsClosureApprove));
 
             options.AddPolicy(PermissionPolicies.InventoryPanelsRead, p => p.RequireClaim("perm", PermissionPolicies.InventoryPanelsRead));
             options.AddPolicy(PermissionPolicies.InventoryPanelsCreate, p => p.RequireClaim("perm", PermissionPolicies.InventoryPanelsCreate));
