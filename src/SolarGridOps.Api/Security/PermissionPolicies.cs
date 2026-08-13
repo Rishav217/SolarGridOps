@@ -25,5 +25,8 @@ public static class PermissionPolicies
     public const string InventoryInvertersRead = "inventory.inverters.read";
     public const string InventoryInvertersCreate = "inventory.inverters.create";
 
+    public const string InventoryMovementsRead = "inventory.movements.read";
+    public const string InventoryMovementsCreate = "inventory.movements.create";
+
     public const string AuthCapabilities = "auth.capabilities";
 }

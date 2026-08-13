@@ -136,6 +136,64 @@ public class InventoryController : ControllerBase
         return NoContent();
     }
 
+    [HttpPost("stock-movements")]
+    [Authorize(Policy = PermissionPolicies.InventoryMovementsCreate)]
+    public async Task<ActionResult<ApiResponse<InventoryMovementDto>>> RecordMovement([FromBody] CreateInventoryMovementRequest request, CancellationToken cancellationToken)
+    {
+        var actorUserId = GetActorUserId();
+        var result = await _inventoryService.RecordMovementAsync(request, actorUserId, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            if (result.Error.Code == "NOT_FOUND")
+            {
+                return NotFound(ApiResponse<InventoryMovementDto>.Fail(result.Error.Code, result.Error.Message));
+            }
+
+            return BadRequest(ApiResponse<InventoryMovementDto>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(ApiResponse<InventoryMovementDto>.Ok(result.Value!));
+    }
+
+    [HttpGet("projects/{projectId:guid}/stock-movements")]
+    [Authorize(Policy = PermissionPolicies.InventoryMovementsRead)]
+    public async Task<ActionResult<ApiResponse<IReadOnlyList<InventoryMovementDto>>>> ListMovementsByProject(Guid projectId, CancellationToken cancellationToken)
+    {
+        var result = await _inventoryService.ListMovementsByProjectAsync(projectId, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return NotFound(ApiResponse<IReadOnlyList<InventoryMovementDto>>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(ApiResponse<IReadOnlyList<InventoryMovementDto>>.Ok(result.Value ?? []));
+    }
+
+    [HttpGet("panels/{panelId:guid}/movements")]
+    [Authorize(Policy = PermissionPolicies.InventoryMovementsRead)]
+    public async Task<ActionResult<ApiResponse<IReadOnlyList<InventoryMovementDto>>>> ListPanelMovements(Guid panelId, CancellationToken cancellationToken)
+    {
+        var result = await _inventoryService.ListPanelMovementsAsync(panelId, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return NotFound(ApiResponse<IReadOnlyList<InventoryMovementDto>>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(ApiResponse<IReadOnlyList<InventoryMovementDto>>.Ok(result.Value ?? []));
+    }
+
+    [HttpGet("inverters/{inverterId:guid}/movements")]
+    [Authorize(Policy = PermissionPolicies.InventoryMovementsRead)]
+    public async Task<ActionResult<ApiResponse<IReadOnlyList<InventoryMovementDto>>>> ListInverterMovements(Guid inverterId, CancellationToken cancellationToken)
+    {
+        var result = await _inventoryService.ListInverterMovementsAsync(inverterId, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return NotFound(ApiResponse<IReadOnlyList<InventoryMovementDto>>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(ApiResponse<IReadOnlyList<InventoryMovementDto>>.Ok(result.Value ?? []));
+    }
+
     private async Task RecordAuditAsync(string actionKey, string entityType, Guid entityId, string? details, CancellationToken cancellationToken)
     {
         var actorUserId = GetActorUserId();

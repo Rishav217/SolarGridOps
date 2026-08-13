@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<InstallationEvidence> InstallationEvidence => Set<InstallationEvidence>();
     public DbSet<PanelAssignment> PanelAssignments => Set<PanelAssignment>();
     public DbSet<InverterAssignment> InverterAssignments => Set<InverterAssignment>();
+    public DbSet<InventoryMovement> InventoryMovements => Set<InventoryMovement>();
     public DbSet<InvoiceRecord> InvoiceRecords => Set<InvoiceRecord>();
     public DbSet<PaymentReceipt> PaymentReceipts => Set<PaymentReceipt>();
     public DbSet<AuditTrailEntry> AuditTrailEntries => Set<AuditTrailEntry>();
@@ -40,6 +41,7 @@ public class AppDbContext : DbContext
         ConfigureInstallationEvidence(modelBuilder);
         ConfigurePanelAssignment(modelBuilder);
         ConfigureInverterAssignment(modelBuilder);
+        ConfigureInventoryMovement(modelBuilder);
         ConfigureInvoiceRecord(modelBuilder);
         ConfigurePaymentReceipt(modelBuilder);
         ConfigureAuditTrailEntry(modelBuilder);
@@ -192,6 +194,26 @@ public class AppDbContext : DbContext
 
             e.HasOne(x => x.Project)
                 .WithMany(x => x.Inverters)
+                .HasForeignKey(x => x.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
+    private static void ConfigureInventoryMovement(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<InventoryMovement>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.ItemType).HasMaxLength(20).IsRequired();
+            e.Property(x => x.MovementType).HasMaxLength(20).IsRequired();
+            e.Property(x => x.UnitCostPrice).HasPrecision(18, 2);
+            e.Property(x => x.UnitSellPrice).HasPrecision(18, 2);
+            e.Property(x => x.Notes).HasMaxLength(1000);
+            e.HasIndex(x => new { x.ProjectId, x.MovedAtUtc });
+            e.HasIndex(x => new { x.ItemType, x.ItemId, x.MovedAtUtc });
+
+            e.HasOne(x => x.Project)
+                .WithMany(x => x.InventoryMovements)
                 .HasForeignKey(x => x.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
