@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SolarGridOps.Maui.LoginPage"
+             Title="Sign In"
+             Shell.TabBarIsVisible="False">
+
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="1,1">
+                <GradientStop Color="#FFF7E8" Offset="0.0" />
+                <GradientStop Color="#FFE8D2" Offset="0.5" />
+                <GradientStop Color="#FFD8B2" Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <VerticalStackLayout Padding="24,32" Spacing="18" VerticalOptions="Center">
+            <Label Text="SolarGridOps"
+                   FontFamily="OpenSansSemibold"
+                   FontSize="34"
+                   TextColor="#8A3A12" />
+            <Label Text="Field-first operations for reliable installs"
+                   FontSize="14"
+                   TextColor="#5C2E1A" />
+
+            <Border BackgroundColor="#FFFDF8" Stroke="#F1C7A0" StrokeShape="RoundRectangle 16" Padding="18">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Sign In" FontFamily="OpenSansSemibold" FontSize="22" TextColor="#663014" />
+
+                    <Entry x:Name="UsernameEntry"
+                           Placeholder="Mobile Number"
+                           Keyboard="Telephone"
+                           Text="9999999999" />
+
+                    <Entry x:Name="PasswordEntry"
+                           Placeholder="Password"
+                           IsPassword="True"
+                           Text="Admin@123" />
+
+                    <Button x:Name="SignInButton"
+                            Text="Continue"
+                            Clicked="OnSignInClicked" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label x:Name="StatusLabel"
+                   Text=""
+                   FontSize="13"
+                   TextColor="#7A3A18" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
