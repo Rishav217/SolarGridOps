@@ -26,6 +26,7 @@ public static class MauiProgram
 		});
 		builder.Services.AddSingleton<SessionState>();
 		builder.Services.AddTransient<AuthApiClient>();
+		builder.Services.AddTransient<InventoryApiClient>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

@@ -19,6 +19,11 @@
             ContentTemplate="{DataTemplate local:MainPage}" />
 
         <ShellContent
+            Title="Inventory"
+            Route="inventory"
+            ContentTemplate="{DataTemplate local:InventoryWorkflowPage}" />
+
+        <ShellContent
             Title="Workspace"
             Route="workspace"
             ContentTemplate="{DataTemplate local:NavigationHubPage}" />

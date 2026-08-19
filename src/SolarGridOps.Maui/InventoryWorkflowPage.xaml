@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SolarGridOps.Maui.InventoryWorkflowPage"
+             Title="Inventory">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
+            <Label Text="Inventory Workflow"
+                   FontSize="28"
+                   FontFamily="OpenSansSemibold"
+                   TextColor="#8A3A12" />
+
+            <Label Text="Project Id"
+                   FontSize="13"
+                   TextColor="#7A604D" />
+            <Entry x:Name="ProjectIdEntry"
+                   Placeholder="Paste project id"
+                   Text="00000000-0000-0000-0000-000000000000" />
+
+            <Border BackgroundColor="#FFF8EE" Stroke="#F2C79D" StrokeShape="RoundRectangle 14" Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Add Panel" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#7B3512" />
+                    <Entry x:Name="SerialEntry" Placeholder="Serial Number" />
+                    <Entry x:Name="WattageEntry" Placeholder="Wattage" Keyboard="Numeric" />
+                    <Button Text="Create Panel" Clicked="OnCreatePanelClicked" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Refresh Panel List" Clicked="OnRefreshClicked" />
+
+            <Label x:Name="StatusLabel" FontSize="13" TextColor="#7A3A18" />
+
+            <CollectionView x:Name="PanelsCollectionView" HeightRequest="420">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,0,0,8" Padding="10" Stroke="#EBC49D" BackgroundColor="#FFFCF7" StrokeShape="RoundRectangle 12">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding SerialNumber}" FontFamily="OpenSansSemibold" />
+                                <Label Text="{Binding Wattage, StringFormat='Wattage: {0}W'}" FontSize="13" TextColor="#6F5B4A" />
+                                <Label Text="{Binding Brand, StringFormat='Brand: {0}'}" FontSize="13" TextColor="#6F5B4A" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
