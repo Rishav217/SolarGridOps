@@ -24,6 +24,11 @@
             ContentTemplate="{DataTemplate local:InventoryWorkflowPage}" />
 
         <ShellContent
+            Title="Installations"
+            Route="installations"
+            ContentTemplate="{DataTemplate local:InstallationWorkflowPage}" />
+
+        <ShellContent
             Title="Workspace"
             Route="workspace"
             ContentTemplate="{DataTemplate local:NavigationHubPage}" />

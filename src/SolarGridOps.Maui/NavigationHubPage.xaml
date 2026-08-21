@@ -16,7 +16,7 @@
             </Border>
 
             <Border BackgroundColor="#FFF9EF" Stroke="#F0C79A" StrokeShape="RoundRectangle 14" Padding="14">
-                <Label Text="Installation workflow screen will be implemented in the installation branch." />
+                <Label Text="Installation workflow is now available from the Installations tab." />
             </Border>
 
             <Border BackgroundColor="#FFF9EF" Stroke="#F0C79A" StrokeShape="RoundRectangle 14" Padding="14">
