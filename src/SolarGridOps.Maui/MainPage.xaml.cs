@@ -6,7 +6,6 @@ namespace SolarGridOps.Maui;
 public partial class MainPage : ContentPage
 {
 	private readonly SessionState _sessionState;
-
 	public MainPage()
 	{
 		InitializeComponent();

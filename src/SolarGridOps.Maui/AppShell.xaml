@@ -29,6 +29,11 @@
             ContentTemplate="{DataTemplate local:InstallationWorkflowPage}" />
 
         <ShellContent
+            Title="KPI"
+            Route="kpi"
+            ContentTemplate="{DataTemplate local:KpiDashboardPage}" />
+
+        <ShellContent
             Title="Workspace"
             Route="workspace"
             ContentTemplate="{DataTemplate local:NavigationHubPage}" />
