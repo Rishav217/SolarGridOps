@@ -37,4 +37,21 @@ public class InventoryRepository : IInventoryRepository
             .OrderByDescending(x => x.AssignedAtUtc)
             .ToListAsync(cancellationToken);
     }
+
+    public Task<PanelAssignment?> GetPanelByIdAsync(Guid panelId, CancellationToken cancellationToken = default)
+    {
+        return _dbContext.PanelAssignments
+            .FirstOrDefaultAsync(x => x.Id == panelId && !x.IsDeleted, cancellationToken);
+    }
+
+    public Task<bool> SerialNumberExistsForOtherPanelAsync(Guid panelId, string serialNumber, CancellationToken cancellationToken = default)
+    {
+        return _dbContext.PanelAssignments
+            .AnyAsync(x => x.Id != panelId && x.SerialNumber == serialNumber && !x.IsDeleted, cancellationToken);
+    }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

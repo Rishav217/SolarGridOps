@@ -28,6 +28,8 @@ public static class DbSeeder
             ("installations.evidence.create", "Create Installation Evidence"),
             ("inventory.panels.read", "Read Inventory Panels"),
             ("inventory.panels.create", "Create Inventory Panels"),
+            ("inventory.panels.update", "Update Inventory Panels"),
+            ("inventory.panels.delete", "Delete Inventory Panels"),
             ("auth.capabilities", "Read Capabilities")
         };
 

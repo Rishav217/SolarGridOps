@@ -55,6 +55,63 @@ public class InventoryService : IInventoryService
         return Result<IReadOnlyList<PanelInventoryDto>>.Success(panels.Select(Map).ToList());
     }
 
+    public async Task<Result<PanelInventoryDto>> UpdatePanelAsync(Guid panelId, UpdatePanelInventoryRequest request, CancellationToken cancellationToken = default)
+    {
+        var panel = await _inventoryRepository.GetPanelByIdAsync(panelId, cancellationToken);
+        if (panel is null)
+        {
+            return Result<PanelInventoryDto>.Failure(Error.NotFound("Panel not found."));
+        }
+
+        if (request.SerialNumber is not null)
+        {
+            var nextSerial = request.SerialNumber.Trim();
+            var serialInUse = await _inventoryRepository.SerialNumberExistsForOtherPanelAsync(panelId, nextSerial, cancellationToken);
+            if (serialInUse)
+            {
+                return Result<PanelInventoryDto>.Failure(Error.Conflict("Panel serial number already exists."));
+            }
+
+            panel.SerialNumber = nextSerial;
+        }
+
+        if (request.Wattage.HasValue)
+        {
+            panel.Wattage = request.Wattage.Value;
+        }
+
+        if (request.Brand is not null)
+        {
+            panel.Brand = string.IsNullOrWhiteSpace(request.Brand) ? null : request.Brand.Trim();
+        }
+
+        if (request.Model is not null)
+        {
+            panel.Model = string.IsNullOrWhiteSpace(request.Model) ? null : request.Model.Trim();
+        }
+
+        if (request.Notes is not null)
+        {
+            panel.Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
+        }
+
+        await _inventoryRepository.SaveChangesAsync(cancellationToken);
+        return Result<PanelInventoryDto>.Success(Map(panel));
+    }
+
+    public async Task<Result> RemovePanelAsync(Guid panelId, CancellationToken cancellationToken = default)
+    {
+        var panel = await _inventoryRepository.GetPanelByIdAsync(panelId, cancellationToken);
+        if (panel is null)
+        {
+            return Result.Failure(Error.NotFound("Panel not found."));
+        }
+
+        panel.IsDeleted = true;
+        await _inventoryRepository.SaveChangesAsync(cancellationToken);
+        return Result.Success();
+    }
+
     private static PanelInventoryDto Map(PanelAssignment panel)
     {
         return new PanelInventoryDto

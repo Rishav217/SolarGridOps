@@ -6,6 +6,7 @@ using SolarGridOps.Domain.Enums;
 
 namespace SolarGridOps.Api.IntegrationTests;
 
+[Collection("ApiIntegration")]
 public class InventoryEndpointsTests : IClassFixture<TestWebApplicationFactory>
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -69,6 +70,69 @@ public class InventoryEndpointsTests : IClassFixture<TestWebApplicationFactory>
         });
 
         Assert.Equal(HttpStatusCode.Conflict, second.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdatePanel_ChangesProvidedFields()
+    {
+        await AuthorizeAsync();
+        var customerId = await CreateCustomerAsync();
+        var projectId = await CreateProjectAsync(customerId, ProjectPhase.Installation);
+
+        var serial = $"IT-UPD-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var createResponse = await PostJsonAsync($"/api/v1/inventory/projects/{projectId}/panels", new
+        {
+            serialNumber = serial,
+            wattage = 530,
+            brand = "OldBrand"
+        });
+        var panelId = await ExtractIdAsync(createResponse);
+
+        var updateResponse = await PatchJsonAsync($"/api/v1/inventory/panels/{panelId}", new
+        {
+            wattage = 575,
+            brand = "NewBrand",
+            notes = "Upgraded"
+        });
+
+        Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+
+        var payload = await updateResponse.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(payload);
+        var panel = doc.RootElement.GetProperty("data");
+
+        Assert.Equal(575, panel.GetProperty("wattage").GetInt32());
+        Assert.Equal("NewBrand", panel.GetProperty("brand").GetString());
+        Assert.Equal("Upgraded", panel.GetProperty("notes").GetString());
+    }
+
+    [Fact]
+    public async Task RemovePanel_MarksPanelDeleted_AndListDoesNotReturnIt()
+    {
+        await AuthorizeAsync();
+        var customerId = await CreateCustomerAsync();
+        var projectId = await CreateProjectAsync(customerId, ProjectPhase.Installation);
+
+        var serial = $"IT-DEL-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var createResponse = await PostJsonAsync($"/api/v1/inventory/projects/{projectId}/panels", new
+        {
+            serialNumber = serial,
+            wattage = 540
+        });
+        var panelId = await ExtractIdAsync(createResponse);
+
+        var deleteResponse = await _client.DeleteAsync($"/api/v1/inventory/panels/{panelId}");
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+
+        var listResponse = await _client.GetAsync($"/api/v1/inventory/projects/{projectId}/panels");
+        Assert.Equal(HttpStatusCode.OK, listResponse.StatusCode);
+
+        var payload = await listResponse.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(payload);
+        var panels = doc.RootElement.GetProperty("data");
+
+        var containsDeleted = panels.EnumerateArray().Any(x => x.GetProperty("serialNumber").GetString() == serial);
+        Assert.False(containsDeleted);
     }
 
     [Fact]
@@ -139,5 +203,11 @@ public class InventoryEndpointsTests : IClassFixture<TestWebApplicationFactory>
     {
         var content = JsonSerializer.Serialize(body, JsonOptions);
         return _client.PostAsync(url, new StringContent(content, Encoding.UTF8, "application/json"));
+    }
+
+    private Task<HttpResponseMessage> PatchJsonAsync(string url, object body)
+    {
+        var content = JsonSerializer.Serialize(body, JsonOptions);
+        return _client.PatchAsync(url, new StringContent(content, Encoding.UTF8, "application/json"));
     }
 }
