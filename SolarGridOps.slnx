@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SolarGridOps.Api/SolarGridOps.Api.csproj" />
+    <Project Path="src/SolarGridOps.Application/SolarGridOps.Application.csproj" />
+    <Project Path="src/SolarGridOps.Infrastructure/SolarGridOps.Infrastructure.csproj" />
+    <Project Path="src/SolarGridOps.Maui/SolarGridOps.Maui.csproj" />
+  </Folder>
+</Solution>

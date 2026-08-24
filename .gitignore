@@ -1,0 +1,44 @@
+# Build artifacts
+bin/
+obj/
+out/
+
+# User / IDE settings
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# .NET / NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# MAUI / mobile build outputs
+**/platforms/android/**/bin/
+**/platforms/android/**/obj/
+
+# Logs and temp
+*.log
+*.tmp
+*.temp
+*.cache
+
+# Python local env (present in workspace)
+.venv/
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Local archives/data drops
+*.zip
+*.rar
+*.7z
+
+# Private local planning and sample data
+data/Sample/
+docs/planning/
