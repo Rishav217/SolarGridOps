@@ -1,9 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-android</TargetFrameworks>
-		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+		<!--
+		By default keep local builds stable on Windows machines without Android/iOS workloads.
+		Enable full mobile matrix with: /p:SolarGridOpsEnableMobileTargets=true
+		-->
+		<TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks Condition="'$(SolarGridOpsEnableMobileTargets)' == 'true' and !$([MSBuild]::IsOSPlatform('linux'))">net9.0-android;net9.0-ios;net9.0-maccatalyst;net9.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks Condition="'$(SolarGridOpsEnableMobileTargets)' == 'true' and $([MSBuild]::IsOSPlatform('linux'))">net9.0-android</TargetFrameworks>
 
 		<!-- Note for MacCatalyst:
 		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
