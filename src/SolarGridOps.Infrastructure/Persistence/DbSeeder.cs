@@ -30,6 +30,8 @@ public static class DbSeeder
             ("inventory.panels.create", "Create Inventory Panels"),
             ("inventory.panels.update", "Update Inventory Panels"),
             ("inventory.panels.delete", "Delete Inventory Panels"),
+            ("inventory.inverters.read", "Read Inventory Inverters"),
+            ("inventory.inverters.create", "Create Inventory Inverters"),
             ("auth.capabilities", "Read Capabilities")
         };
 
