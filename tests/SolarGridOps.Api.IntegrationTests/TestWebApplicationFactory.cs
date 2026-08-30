@@ -1,6 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SolarGridOps.Infrastructure.Persistence;
 
 namespace SolarGridOps.Api.IntegrationTests;
 
@@ -24,6 +28,15 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
             };
 
             config.AddInMemoryCollection(overrides);
+        });
+
+        builder.ConfigureServices(services =>
+        {
+            services.RemoveAll<DbContextOptions<AppDbContext>>();
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlServer($"Server=localhost;Database={_databaseName};Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+            });
         });
     }
 }

@@ -19,6 +19,8 @@ public class AppDbContext : DbContext
     public DbSet<InverterAssignment> InverterAssignments => Set<InverterAssignment>();
     public DbSet<InvoiceRecord> InvoiceRecords => Set<InvoiceRecord>();
     public DbSet<PaymentReceipt> PaymentReceipts => Set<PaymentReceipt>();
+    public DbSet<AuditTrailEntry> AuditTrailEntries => Set<AuditTrailEntry>();
+    public DbSet<ApplicationLogEntry> ApplicationLogEntries => Set<ApplicationLogEntry>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<Permission> Permissions => Set<Permission>();
@@ -40,6 +42,8 @@ public class AppDbContext : DbContext
         ConfigureInverterAssignment(modelBuilder);
         ConfigureInvoiceRecord(modelBuilder);
         ConfigurePaymentReceipt(modelBuilder);
+        ConfigureAuditTrailEntry(modelBuilder);
+        ConfigureApplicationLogEntry(modelBuilder);
         ConfigureUser(modelBuilder);
         ConfigureRole(modelBuilder);
         ConfigurePermission(modelBuilder);
@@ -223,6 +227,37 @@ public class AppDbContext : DbContext
                 .WithMany(x => x.PaymentReceipts)
                 .HasForeignKey(x => x.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
+    private static void ConfigureAuditTrailEntry(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AuditTrailEntry>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.ActionKey).HasMaxLength(120).IsRequired();
+            e.Property(x => x.EntityType).HasMaxLength(120).IsRequired();
+            e.Property(x => x.Details).HasMaxLength(1000);
+            e.HasIndex(x => new { x.CreatedAtUtc, x.ActionKey });
+            e.HasIndex(x => new { x.EntityType, x.EntityId });
+            e.HasIndex(x => x.CreatedByUserId);
+        });
+    }
+
+    private static void ConfigureApplicationLogEntry(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ApplicationLogEntry>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.LogLevel).HasMaxLength(20).IsRequired();
+            e.Property(x => x.EventKey).HasMaxLength(120).IsRequired();
+            e.Property(x => x.Category).HasMaxLength(120).IsRequired();
+            e.Property(x => x.Message).HasMaxLength(1000).IsRequired();
+            e.Property(x => x.Details).HasMaxLength(2000);
+            e.Property(x => x.ExceptionType).HasMaxLength(200);
+            e.HasIndex(x => new { x.CreatedAtUtc, x.LogLevel });
+            e.HasIndex(x => new { x.Category, x.EventKey });
+            e.HasIndex(x => x.CreatedByUserId);
         });
     }
 

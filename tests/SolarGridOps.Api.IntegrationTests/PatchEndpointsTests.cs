@@ -2,6 +2,9 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using SolarGridOps.Infrastructure.Persistence;
 using SolarGridOps.Domain.Enums;
 
 namespace SolarGridOps.Api.IntegrationTests;
@@ -10,10 +13,12 @@ namespace SolarGridOps.Api.IntegrationTests;
 public class PatchEndpointsTests : IClassFixture<TestWebApplicationFactory>
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    private readonly TestWebApplicationFactory _factory;
     private readonly HttpClient _client;
 
     public PatchEndpointsTests(TestWebApplicationFactory factory)
     {
+        _factory = factory;
         _client = factory.CreateClient();
     }
 
@@ -74,6 +79,27 @@ public class PatchEndpointsTests : IClassFixture<TestWebApplicationFactory>
         var data = doc.RootElement.GetProperty("data");
         Assert.Equal("Day 2 complete", data.GetProperty("workSummary").GetString());
         Assert.True(data.GetProperty("isCompletedForDay").GetBoolean());
+    }
+
+    [Fact]
+    public async Task InstallationSessionPatch_MissingSession_WritesWarningLog()
+    {
+        await AuthorizeAsync();
+
+        var response = await PatchJsonAsync($"/api/v1/installations/sessions/{Guid.NewGuid()}", new
+        {
+            workSummary = "Missing session"
+        });
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var logEntry = await db.ApplicationLogEntries.SingleAsync(x =>
+            x.EventKey == "installations.session.session_missing" &&
+            x.LogLevel == "Warning");
+
+        Assert.Contains("updating session", logEntry.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     private async Task AuthorizeAsync()

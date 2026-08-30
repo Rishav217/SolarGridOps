@@ -1,6 +1,8 @@
 using System.Net;
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using SolarGridOps.Api.Models;
+using SolarGridOps.Application.Features.Logging;
 
 namespace SolarGridOps.Api.Middleware;
 
@@ -24,6 +26,15 @@ public class ExceptionHandlingMiddleware
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception on {Method} {Path}", context.Request.Method, context.Request.Path);
+            var appLogService = context.RequestServices.GetRequiredService<IAppLogService>();
+            await appLogService.WriteAsync(
+                "Error",
+                "app.unhandled_exception",
+                "middleware",
+                $"Unhandled exception on {context.Request.Method} {context.Request.Path}",
+                details: context.TraceIdentifier,
+                exceptionType: ex.GetType().FullName,
+                cancellationToken: context.RequestAborted);
             await WriteErrorResponse(context, ex);
         }
     }

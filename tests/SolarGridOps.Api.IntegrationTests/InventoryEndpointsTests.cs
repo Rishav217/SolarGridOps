@@ -2,6 +2,9 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using SolarGridOps.Infrastructure.Persistence;
 using SolarGridOps.Domain.Enums;
 
 namespace SolarGridOps.Api.IntegrationTests;
@@ -10,10 +13,12 @@ namespace SolarGridOps.Api.IntegrationTests;
 public class InventoryEndpointsTests : IClassFixture<TestWebApplicationFactory>
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    private readonly TestWebApplicationFactory _factory;
     private readonly HttpClient _client;
 
     public InventoryEndpointsTests(TestWebApplicationFactory factory)
     {
+        _factory = factory;
         _client = factory.CreateClient();
     }
 
@@ -46,6 +51,33 @@ public class InventoryEndpointsTests : IClassFixture<TestWebApplicationFactory>
         Assert.True(panels.GetArrayLength() >= 1);
         var containsCreated = panels.EnumerateArray().Any(x => x.GetProperty("serialNumber").GetString() == serial);
         Assert.True(containsCreated);
+    }
+
+    [Fact]
+    public async Task AddPanel_WritesAuditTrailEntry()
+    {
+        await AuthorizeAsync();
+        var customerId = await CreateCustomerAsync();
+        var projectId = await CreateProjectAsync(customerId, ProjectPhase.Installation);
+
+        var serial = $"IT-AUD-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        var createResponse = await PostJsonAsync($"/api/v1/inventory/projects/{projectId}/panels", new
+        {
+            serialNumber = serial,
+            wattage = 545
+        });
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var auditEntry = await db.AuditTrailEntries.SingleAsync(x =>
+            x.ActionKey == "inventory.panel.created" &&
+            x.EntityType == "panel" &&
+            x.Details != null &&
+            x.Details.Contains(serial));
+
+        Assert.Contains(serial, auditEntry.Details);
     }
 
     [Fact]
