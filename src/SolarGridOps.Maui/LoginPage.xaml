@@ -6,7 +6,7 @@
              Shell.TabBarIsVisible="False">
 
     <ScrollView>
-        <Grid>
+        <Grid x:Name="RootGrid">
             <Grid.Background>
                 <LinearGradientBrush EndPoint="1,1">
                     <GradientStop Color="#EAF3FF" Offset="0.0" />
@@ -14,6 +14,35 @@
                     <GradientStop Color="#B7D1F4" Offset="1.0" />
                 </LinearGradientBrush>
             </Grid.Background>
+
+            <Image Source="bg_energy_wave.svg"
+                   Aspect="AspectFill"
+                   Opacity="0.36"
+                   InputTransparent="True" />
+
+            <Border x:Name="OrbOne"
+                    WidthRequest="220"
+                    HeightRequest="220"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start"
+                    Margin="0,-70,-55,0"
+                    BackgroundColor="#7AB0E3"
+                    Opacity="0.22"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 110"
+                    InputTransparent="True" />
+
+            <Border x:Name="OrbTwo"
+                    WidthRequest="160"
+                    HeightRequest="160"
+                    HorizontalOptions="Start"
+                    VerticalOptions="End"
+                    Margin="-35,0,0,-30"
+                    BackgroundColor="#2E679E"
+                    Opacity="0.17"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 80"
+                    InputTransparent="True" />
 
             <VerticalStackLayout Padding="22,28" Spacing="14" VerticalOptions="Center">
                 <Border BackgroundColor="#173A5E" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="18,16">
@@ -48,26 +77,28 @@
                         <Label Text="Username or mobile"
                                FontFamily="OpenSansSemibold"
                                FontSize="13"
-                               TextColor="#35587A" />
+                               TextColor="#21486E" />
                         <Border BackgroundColor="#F6FAFF" Stroke="#C2D6F0" StrokeShape="RoundRectangle 10" Padding="10,6">
                             <Entry x:Name="UsernameEntry"
-                                   Placeholder="Enter username or mobile"
-                                   Keyboard="Telephone"
-                                   TextColor="#0F2338"
-                                   PlaceholderColor="#6E88A7"
+                                Placeholder="Enter username"
+                                Keyboard="Default"
+                                TextColor="#0B1D30"
+                                PlaceholderColor="#4F6F92"
+                                FontSize="16"
                                    ClearButtonVisibility="WhileEditing" />
                         </Border>
 
                         <Label Text="Password"
                                FontFamily="OpenSansSemibold"
                                FontSize="13"
-                               TextColor="#35587A" />
+                               TextColor="#21486E" />
                         <Border BackgroundColor="#F6FAFF" Stroke="#C2D6F0" StrokeShape="RoundRectangle 10" Padding="10,6">
                             <Entry x:Name="PasswordEntry"
                                    Placeholder="Enter password"
                                    IsPassword="True"
-                                   TextColor="#0F2338"
-                                   PlaceholderColor="#6E88A7"
+                                TextColor="#0B1D30"
+                                PlaceholderColor="#4F6F92"
+                                FontSize="16"
                                    ClearButtonVisibility="WhileEditing" />
                         </Border>
 
