@@ -78,8 +78,9 @@
                             <Entry x:Name="UsernameEntry"
                                 Placeholder="Enter username"
                                 Keyboard="Default"
-                                          TextColor="#081A2D"
-                                          PlaceholderColor="#375A7F"
+                                BackgroundColor="#FFFFFF"
+                                TextColor="#061521"
+                                PlaceholderColor="#5A7088"
                                 FontSize="16"
                                    ClearButtonVisibility="WhileEditing" />
                         </Border>
@@ -92,8 +93,9 @@
                             <Entry x:Name="PasswordEntry"
                                    Placeholder="Enter password"
                                    IsPassword="True"
-                                          TextColor="#081A2D"
-                                          PlaceholderColor="#375A7F"
+                                BackgroundColor="#FFFFFF"
+                                TextColor="#061521"
+                                PlaceholderColor="#5A7088"
                                 FontSize="16"
                                    ClearButtonVisibility="WhileEditing" />
                         </Border>
