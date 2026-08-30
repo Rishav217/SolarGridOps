@@ -18,6 +18,7 @@ public class Project : BaseEntity
     public ICollection<InstallationSession> InstallationSessions { get; set; } = new List<InstallationSession>();
     public ICollection<PanelAssignment> Panels { get; set; } = new List<PanelAssignment>();
     public ICollection<InverterAssignment> Inverters { get; set; } = new List<InverterAssignment>();
+    public ICollection<InventoryMovement> InventoryMovements { get; set; } = new List<InventoryMovement>();
     public ICollection<InvoiceRecord> Invoices { get; set; } = new List<InvoiceRecord>();
     public ICollection<PaymentReceipt> PaymentReceipts { get; set; } = new List<PaymentReceipt>();
 }
