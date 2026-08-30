@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SolarGridOps.Maui.NavigationHubPage"
+             Title="Workspace">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
+            <Label Text="Feature Navigation"
+                   FontFamily="OpenSansSemibold"
+                   FontSize="24"
+                   TextColor="#8A3A12" />
+
+            <Border BackgroundColor="#FFF9EF" Stroke="#F0C79A" StrokeShape="RoundRectangle 14" Padding="14">
+                <Label Text="Inventory workflow screen will be implemented in the inventory branch." />
+            </Border>
+
+            <Border BackgroundColor="#FFF9EF" Stroke="#F0C79A" StrokeShape="RoundRectangle 14" Padding="14">
+                <Label Text="Installation workflow screen will be implemented in the installation branch." />
+            </Border>
+
+            <Border BackgroundColor="#FFF9EF" Stroke="#F0C79A" StrokeShape="RoundRectangle 14" Padding="14">
+                <Label Text="Dashboard KPI cards will be expanded in the KPI branch." />
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
