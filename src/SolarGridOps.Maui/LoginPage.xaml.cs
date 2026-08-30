@@ -15,11 +15,16 @@ public partial class LoginPage : ContentPage
         _sessionState = App.Services.GetRequiredService<SessionState>();
     }
 
+    private void OnShowPasswordCheckedChanged(object? sender, CheckedChangedEventArgs e)
+    {
+        PasswordEntry.IsPassword = !e.Value;
+    }
+
     private async void OnSignInClicked(object? sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(UsernameEntry.Text) || string.IsNullOrWhiteSpace(PasswordEntry.Text))
         {
-            StatusLabel.Text = "Enter both mobile number and password.";
+            StatusLabel.Text = "Enter username/mobile and password.";
             return;
         }
 
