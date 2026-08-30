@@ -1,23 +1,64 @@
-﻿namespace SolarGridOps.Maui;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SolarGridOps.Maui.Services;
+
+namespace SolarGridOps.Maui;
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+	private readonly InventoryApiClient _inventoryApiClient;
 
 	public MainPage()
 	{
 		InitializeComponent();
+		_inventoryApiClient = App.Services.GetRequiredService<InventoryApiClient>();
 	}
 
-	private void OnCounterClicked(object? sender, EventArgs e)
+	private async void OnRefreshClicked(object? sender, EventArgs e)
 	{
-		count++;
+		if (!Guid.TryParse(ProjectIdEntry.Text, out var projectId))
+		{
+			StatusLabel.Text = "Enter a valid project id.";
+			return;
+		}
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
+		StatusLabel.Text = "Loading panels...";
+		try
+		{
+			var panels = await _inventoryApiClient.GetPanelsAsync(projectId);
+			PanelsCollectionView.ItemsSource = panels;
+			StatusLabel.Text = $"Loaded {panels.Count} panel record(s).";
+		}
+		catch
+		{
+			StatusLabel.Text = "Unable to fetch panels. Verify API server and auth setup.";
+		}
+	}
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
+	private async void OnCreatePanelClicked(object? sender, EventArgs e)
+	{
+		if (!Guid.TryParse(ProjectIdEntry.Text, out var projectId))
+		{
+			StatusLabel.Text = "Enter a valid project id.";
+			return;
+		}
+
+		if (string.IsNullOrWhiteSpace(SerialEntry.Text) || !int.TryParse(WattageEntry.Text, out var wattage))
+		{
+			StatusLabel.Text = "Enter serial number and numeric wattage.";
+			return;
+		}
+
+		StatusLabel.Text = "Creating panel...";
+		var response = await _inventoryApiClient.AddPanelAsync(projectId, SerialEntry.Text.Trim(), wattage);
+		if (!response.IsSuccess)
+		{
+			StatusLabel.Text = response.Error ?? "Panel create failed.";
+			return;
+		}
+
+		SerialEntry.Text = string.Empty;
+		WattageEntry.Text = string.Empty;
+		StatusLabel.Text = "Panel created. Refreshing list...";
+		OnRefreshClicked(sender, e);
 	}
 }
