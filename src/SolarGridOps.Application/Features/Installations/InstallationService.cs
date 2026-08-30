@@ -1,6 +1,7 @@
 using SolarGridOps.Application.Common;
 using SolarGridOps.Application.Features.Logging;
 using SolarGridOps.Domain.Entities;
+using SolarGridOps.Domain.Enums;
 
 namespace SolarGridOps.Application.Features.Installations;
 
@@ -124,6 +125,57 @@ public class InstallationService : IInstallationService
         return Result<InstallationSessionDto>.Success(Map(session));
     }
 
+    public async Task<Result<InstallationSessionDto>> RequestClosureAsync(Guid sessionId, RequestInstallationClosureRequest request, Guid actorUserId, CancellationToken cancellationToken = default)
+    {
+        var session = await _installationRepository.GetSessionByIdAsync(sessionId, cancellationToken);
+        if (session is null)
+        {
+            await _appLogService.WriteAsync("Warning", "installations.closure.session_missing", "installations", "Installation session not found while requesting closure.", $"sessionId={sessionId}", cancellationToken: cancellationToken);
+            return Result<InstallationSessionDto>.Failure(Error.NotFound("Installation session not found."));
+        }
+
+        if (session.ClosureStatus == InstallationClosureStatus.ClosedApproved)
+        {
+            return Result<InstallationSessionDto>.Failure(Error.Conflict("Installation session is already approved and closed."));
+        }
+
+        session.ClosureStatus = InstallationClosureStatus.ClosedPendingApproval;
+        session.ClosureRequestedAtUtc = DateTime.UtcNow;
+        session.ClosureRequestedByUserId = actorUserId;
+        session.CustomerSignatureName = request.CustomerSignatureName.Trim();
+        session.CustomerSignatureBase64 = request.CustomerSignatureBase64.Trim();
+        session.ClosureNotes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
+
+        await _installationRepository.SaveChangesAsync(cancellationToken);
+        await _appLogService.WriteAsync("Information", "installations.closure.requested", "installations", "Installation closure requested.", $"sessionId={session.Id};actorUserId={actorUserId}", cancellationToken: cancellationToken);
+
+        return Result<InstallationSessionDto>.Success(Map(session));
+    }
+
+    public async Task<Result<InstallationSessionDto>> ApproveClosureAsync(Guid sessionId, Guid actorUserId, CancellationToken cancellationToken = default)
+    {
+        var session = await _installationRepository.GetSessionByIdAsync(sessionId, cancellationToken);
+        if (session is null)
+        {
+            await _appLogService.WriteAsync("Warning", "installations.closure.session_missing", "installations", "Installation session not found while approving closure.", $"sessionId={sessionId}", cancellationToken: cancellationToken);
+            return Result<InstallationSessionDto>.Failure(Error.NotFound("Installation session not found."));
+        }
+
+        if (session.ClosureStatus != InstallationClosureStatus.ClosedPendingApproval)
+        {
+            return Result<InstallationSessionDto>.Failure(Error.Validation("Installation session is not pending approval."));
+        }
+
+        session.ClosureStatus = InstallationClosureStatus.ClosedApproved;
+        session.ClosureApprovedAtUtc = DateTime.UtcNow;
+        session.ClosureApprovedByUserId = actorUserId;
+
+        await _installationRepository.SaveChangesAsync(cancellationToken);
+        await _appLogService.WriteAsync("Information", "installations.closure.approved", "installations", "Installation closure approved.", $"sessionId={session.Id};actorUserId={actorUserId}", cancellationToken: cancellationToken);
+
+        return Result<InstallationSessionDto>.Success(Map(session));
+    }
+
     private static InstallationSessionDto Map(InstallationSession session)
     {
         return new InstallationSessionDto
@@ -134,6 +186,11 @@ public class InstallationService : IInstallationService
             SessionDateUtc = session.SessionDateUtc,
             WorkSummary = session.WorkSummary,
             IsCompletedForDay = session.IsCompletedForDay,
+            ClosureStatus = session.ClosureStatus,
+            ClosureRequestedAtUtc = session.ClosureRequestedAtUtc,
+            ClosureApprovedAtUtc = session.ClosureApprovedAtUtc,
+            CustomerSignatureName = session.CustomerSignatureName,
+            ClosureNotes = session.ClosureNotes,
             EvidenceCount = session.EvidenceItems.Count
         };
     }

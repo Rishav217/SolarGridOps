@@ -103,6 +103,61 @@ public class InstallationsController : ControllerBase
         return Ok(ApiResponse<InstallationSessionDto>.Ok(result.Value!));
     }
 
+    [HttpPost("sessions/{sessionId:guid}/request-closure")]
+    [Authorize(Policy = PermissionPolicies.InstallationsClosureRequest)]
+    public async Task<ActionResult<ApiResponse<InstallationSessionDto>>> RequestClosure(Guid sessionId, [FromBody] RequestInstallationClosureRequest request, CancellationToken cancellationToken)
+    {
+        var actorUserId = GetActorUserId();
+        if (!actorUserId.HasValue)
+        {
+            return Unauthorized(ApiResponse<InstallationSessionDto>.Fail("UNAUTHORIZED", "Invalid token subject."));
+        }
+
+        var result = await _installationService.RequestClosureAsync(sessionId, request, actorUserId.Value, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            if (result.Error.Code == "NOT_FOUND")
+            {
+                return NotFound(ApiResponse<InstallationSessionDto>.Fail(result.Error.Code, result.Error.Message));
+            }
+
+            if (result.Error.Code == "CONFLICT")
+            {
+                return Conflict(ApiResponse<InstallationSessionDto>.Fail(result.Error.Code, result.Error.Message));
+            }
+
+            return BadRequest(ApiResponse<InstallationSessionDto>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        await RecordAuditAsync("installations.closure.requested", "installation_session", result.Value!.Id, $"status={result.Value.ClosureStatus}", cancellationToken);
+        return Ok(ApiResponse<InstallationSessionDto>.Ok(result.Value!));
+    }
+
+    [HttpPost("sessions/{sessionId:guid}/approve-closure")]
+    [Authorize(Policy = PermissionPolicies.InstallationsClosureApprove)]
+    public async Task<ActionResult<ApiResponse<InstallationSessionDto>>> ApproveClosure(Guid sessionId, CancellationToken cancellationToken)
+    {
+        var actorUserId = GetActorUserId();
+        if (!actorUserId.HasValue)
+        {
+            return Unauthorized(ApiResponse<InstallationSessionDto>.Fail("UNAUTHORIZED", "Invalid token subject."));
+        }
+
+        var result = await _installationService.ApproveClosureAsync(sessionId, actorUserId.Value, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            if (result.Error.Code == "NOT_FOUND")
+            {
+                return NotFound(ApiResponse<InstallationSessionDto>.Fail(result.Error.Code, result.Error.Message));
+            }
+
+            return BadRequest(ApiResponse<InstallationSessionDto>.Fail(result.Error.Code, result.Error.Message));
+        }
+
+        await RecordAuditAsync("installations.closure.approved", "installation_session", result.Value!.Id, $"status={result.Value.ClosureStatus}", cancellationToken);
+        return Ok(ApiResponse<InstallationSessionDto>.Ok(result.Value!));
+    }
+
     private async Task RecordAuditAsync(string actionKey, string entityType, Guid entityId, string? details, CancellationToken cancellationToken)
     {
         var actorUserId = GetActorUserId();

@@ -82,6 +82,33 @@ public class PatchEndpointsTests : IClassFixture<TestWebApplicationFactory>
     }
 
     [Fact]
+    public async Task InstallationSession_RequestAndApproveClosure_UpdatesClosureStatus()
+    {
+        await AuthorizeAsync();
+        var customerId = await CreateCustomerAsync();
+        var projectId = await CreateProjectAsync(customerId, ProjectPhase.Installation);
+        var sessionId = await CreateSessionAsync(projectId);
+
+        var requestClosureResponse = await PostJsonAsync($"/api/v1/installations/sessions/{sessionId}/request-closure", new
+        {
+            customerSignatureName = "Durgesh",
+            customerSignatureBase64 = "U0lHTkFUVVJF",
+            notes = "All panels fitted"
+        });
+        Assert.Equal(HttpStatusCode.OK, requestClosureResponse.StatusCode);
+
+        var approveClosureResponse = await PostJsonAsync($"/api/v1/installations/sessions/{sessionId}/approve-closure", new { });
+        Assert.Equal(HttpStatusCode.OK, approveClosureResponse.StatusCode);
+
+        var payload = await approveClosureResponse.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(payload);
+        var data = doc.RootElement.GetProperty("data");
+
+        Assert.Equal(2, data.GetProperty("closureStatus").GetInt32());
+        Assert.Equal("Durgesh", data.GetProperty("customerSignatureName").GetString());
+    }
+
+    [Fact]
     public async Task InstallationSessionPatch_MissingSession_WritesWarningLog()
     {
         await AuthorizeAsync();
