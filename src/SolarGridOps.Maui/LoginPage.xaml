@@ -15,9 +15,9 @@
                 </LinearGradientBrush>
             </Grid.Background>
 
-            <Image Source="bg_energy_wave.svg"
+                 <Image Source="bg_customer_solar.svg"
                    Aspect="AspectFill"
-                   Opacity="0.36"
+                     Opacity="0.24"
                    InputTransparent="True" />
 
             <Border x:Name="OrbOne"
@@ -45,45 +45,41 @@
                     InputTransparent="True" />
 
             <VerticalStackLayout Padding="22,28" Spacing="14" VerticalOptions="Center">
-                <Border BackgroundColor="#173A5E" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="18,16">
+                <Border BackgroundColor="#12375B" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="18,16">
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                        <Border WidthRequest="46" HeightRequest="46" BackgroundColor="#2C5D8E" StrokeThickness="0" StrokeShape="RoundRectangle 12" VerticalOptions="Center">
-                            <Label Text="SG"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="Center"
-                                   FontFamily="OpenSansSemibold"
-                                   FontSize="17"
-                                   TextColor="White" />
-                        </Border>
+                        <Image Source="icon_customer_portal.svg"
+                               WidthRequest="46"
+                               HeightRequest="46"
+                               VerticalOptions="Center" />
                         <VerticalStackLayout Grid.Column="1" Spacing="2">
                             <Label Text="SolarGridOps"
                                    FontFamily="OpenSansSemibold"
                                    FontSize="28"
                                    TextColor="White" />
-                            <Label Text="Operations Console"
+                            <Label Text="Customer &amp; Field Portal"
                                    FontSize="13"
-                                   TextColor="#D8E8FC" />
+                                   TextColor="#E0EEFF" />
                         </VerticalStackLayout>
                     </Grid>
                 </Border>
 
                 <Border BackgroundColor="#FFFFFF" Stroke="#98B6DA" StrokeShape="RoundRectangle 18" Padding="18">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Sign in to continue"
+                           <Label Text="Sign in to continue"
                                FontFamily="OpenSansSemibold"
                                FontSize="21"
-                               TextColor="#14324F" />
+                               TextColor="#102C47" />
 
                         <Label Text="Username or mobile"
                                FontFamily="OpenSansSemibold"
                                FontSize="13"
-                               TextColor="#21486E" />
+                               TextColor="#1A3F63" />
                         <Border BackgroundColor="#F6FAFF" Stroke="#C2D6F0" StrokeShape="RoundRectangle 10" Padding="10,6">
                             <Entry x:Name="UsernameEntry"
                                 Placeholder="Enter username"
                                 Keyboard="Default"
-                                TextColor="#0B1D30"
-                                PlaceholderColor="#4F6F92"
+                                          TextColor="#081A2D"
+                                          PlaceholderColor="#375A7F"
                                 FontSize="16"
                                    ClearButtonVisibility="WhileEditing" />
                         </Border>
@@ -91,13 +87,13 @@
                         <Label Text="Password"
                                FontFamily="OpenSansSemibold"
                                FontSize="13"
-                               TextColor="#21486E" />
+                               TextColor="#1A3F63" />
                         <Border BackgroundColor="#F6FAFF" Stroke="#C2D6F0" StrokeShape="RoundRectangle 10" Padding="10,6">
                             <Entry x:Name="PasswordEntry"
                                    Placeholder="Enter password"
                                    IsPassword="True"
-                                TextColor="#0B1D30"
-                                PlaceholderColor="#4F6F92"
+                                          TextColor="#081A2D"
+                                          PlaceholderColor="#375A7F"
                                 FontSize="16"
                                    ClearButtonVisibility="WhileEditing" />
                         </Border>
@@ -107,7 +103,7 @@
                             <Label Text="Show password"
                                    VerticalOptions="Center"
                                    FontSize="13"
-                                   TextColor="#35587A" />
+                                   TextColor="#1A3F63" />
                         </HorizontalStackLayout>
 
                         <Button x:Name="SignInButton"
@@ -118,14 +114,14 @@
 
                         <Label Text="Sample login for pilot: 9999999999 / Admin@123"
                                FontSize="12"
-                               TextColor="#5E7793" />
+                               TextColor="#3D6288" />
                     </VerticalStackLayout>
                 </Border>
 
                 <Label x:Name="StatusLabel"
                        Text=""
                        FontSize="13"
-                       TextColor="#203E5F" />
+                       TextColor="#102C47" />
             </VerticalStackLayout>
         </Grid>
     </ScrollView>

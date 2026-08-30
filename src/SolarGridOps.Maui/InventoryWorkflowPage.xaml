@@ -5,18 +5,27 @@
              Title="Inventory">
 
     <ScrollView>
-        <VerticalStackLayout Padding="18,14,18,22" Spacing="12">
-            <Border BackgroundColor="#1C466F" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="Inventory Control"
-                           FontSize="24"
-                           FontFamily="OpenSansSemibold"
-                           TextColor="White" />
-                    <Label Text="Track assignments, stock, and panel serials with audit-ready consistency."
-                           FontSize="13"
-                           TextColor="#CFE4FF" />
-                </VerticalStackLayout>
-            </Border>
+        <Grid>
+            <Image Source="bg_inventory_panels.svg"
+                   Aspect="AspectFill"
+                   Opacity="0.20"
+                   InputTransparent="True" />
+
+            <VerticalStackLayout Padding="18,14,18,22" Spacing="12">
+                <Border BackgroundColor="#12375B" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Image Source="icon_inventory_badge.svg" WidthRequest="44" HeightRequest="44" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Inventory Control"
+                               FontSize="24"
+                               FontFamily="OpenSansSemibold"
+                               TextColor="White" />
+                            <Label Text="Track assignments, stock, and panel serials with audit-ready consistency."
+                               FontSize="13"
+                               TextColor="#D9EAFE" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
 
             <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="12">
                 <VerticalStackLayout Spacing="8">
@@ -38,7 +47,7 @@
 
             <Button Text="Refresh Panel List" BackgroundColor="#2A6BA6" Clicked="OnRefreshClicked" />
 
-            <Label x:Name="StatusLabel" FontSize="13" TextColor="#315779" />
+            <Label x:Name="StatusLabel" FontSize="13" TextColor="#12385C" />
 
             <CollectionView x:Name="PanelsCollectionView" HeightRequest="440">
                 <CollectionView.ItemTemplate>
@@ -53,7 +62,8 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 
 </ContentPage>
