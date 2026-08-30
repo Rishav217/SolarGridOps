@@ -32,7 +32,7 @@
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 
 		<!-- Display name -->
-		<ApplicationTitle>SolarGridOps.Maui</ApplicationTitle>
+		<ApplicationTitle>SolarGridOps</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.solargridops.maui</ApplicationId>

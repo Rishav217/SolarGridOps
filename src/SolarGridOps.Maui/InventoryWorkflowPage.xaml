@@ -5,40 +5,49 @@
              Title="Inventory">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="12">
-            <Label Text="Inventory Workflow"
-                   FontSize="28"
-                   FontFamily="OpenSansSemibold"
-                   TextColor="#8A3A12" />
-
-            <Label Text="Project Id"
-                   FontSize="13"
-                   TextColor="#7A604D" />
-            <Entry x:Name="ProjectIdEntry"
-                   Placeholder="Paste project id"
-                   Text="00000000-0000-0000-0000-000000000000" />
-
-            <Border BackgroundColor="#FFF8EE" Stroke="#F2C79D" StrokeShape="RoundRectangle 14" Padding="12">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Add Panel" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#7B3512" />
-                    <Entry x:Name="SerialEntry" Placeholder="Serial Number" />
-                    <Entry x:Name="WattageEntry" Placeholder="Wattage" Keyboard="Numeric" />
-                    <Button Text="Create Panel" Clicked="OnCreatePanelClicked" />
+        <VerticalStackLayout Padding="18,14,18,22" Spacing="12">
+            <Border BackgroundColor="#1C466F" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Inventory Control"
+                           FontSize="24"
+                           FontFamily="OpenSansSemibold"
+                           TextColor="White" />
+                    <Label Text="Track assignments, stock, and panel serials with audit-ready consistency."
+                           FontSize="13"
+                           TextColor="#CFE4FF" />
                 </VerticalStackLayout>
             </Border>
 
-            <Button Text="Refresh Panel List" Clicked="OnRefreshClicked" />
+            <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Project Context" FontFamily="OpenSansSemibold" FontSize="16" TextColor="#1A3F66" />
+                    <Entry x:Name="ProjectIdEntry"
+                           Placeholder="Paste project id"
+                           Text="00000000-0000-0000-0000-000000000000" />
+                </VerticalStackLayout>
+            </Border>
 
-            <Label x:Name="StatusLabel" FontSize="13" TextColor="#7A3A18" />
+            <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Add Panel" FontFamily="OpenSansSemibold" FontSize="16" TextColor="#1A3F66" />
+                    <Entry x:Name="SerialEntry" Placeholder="Serial number" />
+                    <Entry x:Name="WattageEntry" Placeholder="Wattage" Keyboard="Numeric" />
+                    <Button Text="Create Panel" BackgroundColor="#1F4F82" Clicked="OnCreatePanelClicked" />
+                </VerticalStackLayout>
+            </Border>
 
-            <CollectionView x:Name="PanelsCollectionView" HeightRequest="420">
+            <Button Text="Refresh Panel List" BackgroundColor="#2A6BA6" Clicked="OnRefreshClicked" />
+
+            <Label x:Name="StatusLabel" FontSize="13" TextColor="#315779" />
+
+            <CollectionView x:Name="PanelsCollectionView" HeightRequest="440">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Margin="0,0,0,8" Padding="10" Stroke="#EBC49D" BackgroundColor="#FFFCF7" StrokeShape="RoundRectangle 12">
+                        <Border Margin="0,0,0,8" Padding="10" Stroke="#BED5F0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 12">
                             <VerticalStackLayout>
-                                <Label Text="{Binding SerialNumber}" FontFamily="OpenSansSemibold" />
-                                <Label Text="{Binding Wattage, StringFormat='Wattage: {0}W'}" FontSize="13" TextColor="#6F5B4A" />
-                                <Label Text="{Binding Brand, StringFormat='Brand: {0}'}" FontSize="13" TextColor="#6F5B4A" />
+                                <Label Text="{Binding SerialNumber}" FontFamily="OpenSansSemibold" TextColor="#1A3F66" />
+                                <Label Text="{Binding Wattage, StringFormat='Wattage: {0}W'}" FontSize="13" TextColor="#4B6D90" />
+                                <Label Text="{Binding Brand, StringFormat='Brand: {0}'}" FontSize="13" TextColor="#4B6D90" />
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
