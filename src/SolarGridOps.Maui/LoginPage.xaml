@@ -100,6 +100,12 @@
                                    ClearButtonVisibility="WhileEditing" />
                         </Border>
 
+                           <Label x:Name="StatusLabel"
+                               Text=""
+                               IsVisible="False"
+                               FontSize="13"
+                               TextColor="#C62828" />
+
                         <HorizontalStackLayout Spacing="8">
                             <CheckBox x:Name="ShowPasswordCheckBox" CheckedChanged="OnShowPasswordCheckedChanged" />
                             <Label Text="Show password"
@@ -119,11 +125,6 @@
                                TextColor="#3D6288" />
                     </VerticalStackLayout>
                 </Border>
-
-                <Label x:Name="StatusLabel"
-                       Text=""
-                       FontSize="13"
-                       TextColor="#102C47" />
             </VerticalStackLayout>
         </Grid>
     </ScrollView>
