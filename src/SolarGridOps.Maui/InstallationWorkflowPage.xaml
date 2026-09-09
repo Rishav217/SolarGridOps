@@ -20,10 +20,12 @@
 
             <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="12">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Project Context" FontFamily="OpenSansSemibold" FontSize="16" TextColor="#1A3F66" />
+                    <Label Text="Project ID" FontFamily="OpenSansSemibold" FontSize="16" TextColor="#1A3F66" />
                     <Entry x:Name="ProjectIdEntry"
-                           Placeholder="Paste project id"
-                           Text="00000000-0000-0000-0000-000000000000" />
+                           Placeholder="Paste project id from your project list" />
+                    <Label Text="Tip: paste the project ID once, then use Refresh Sessions."
+                           FontSize="12"
+                           TextColor="#4B6D90" />
                 </VerticalStackLayout>
             </Border>
 
