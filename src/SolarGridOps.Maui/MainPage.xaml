@@ -5,7 +5,13 @@
              Title="Dashboard">
 
     <ScrollView>
-        <VerticalStackLayout Padding="18,14,18,20" Spacing="12">
+        <Grid>
+            <Image Source="bg_customer_solar.svg"
+                   Aspect="AspectFill"
+                   Opacity="0.12"
+                   InputTransparent="True" />
+
+            <VerticalStackLayout Padding="18,14,18,20" Spacing="12">
             <Border BackgroundColor="#173A5E" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="16">
                 <VerticalStackLayout Spacing="4">
                     <Label Text="Daily Operations Overview" FontFamily="OpenSansSemibold" FontSize="22" TextColor="White" />
@@ -54,7 +60,8 @@
 
             <Button Text="Open Help and Tools" Clicked="OnWorkspaceClicked" BackgroundColor="#1F4F82" />
             <Button Text="Sign Out" BackgroundColor="#AA4B2A" Clicked="OnSignOutClicked" />
-        </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 
 </ContentPage>

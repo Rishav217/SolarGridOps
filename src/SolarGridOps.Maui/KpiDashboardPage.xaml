@@ -5,7 +5,13 @@
              Title="Operations Alerts">
 
     <ScrollView>
-        <VerticalStackLayout Padding="18,14,18,22" Spacing="12">
+        <Grid>
+            <Image Source="bg_inventory_panels.svg"
+                   Aspect="AspectFill"
+                   Opacity="0.10"
+                   InputTransparent="True" />
+
+            <VerticalStackLayout Padding="18,14,18,22" Spacing="12">
             <Border BackgroundColor="#163A60" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
                 <VerticalStackLayout Spacing="3">
                     <Label Text="Operations Alerts"
@@ -75,7 +81,8 @@
 
             <Button Text="Refresh Snapshot" BackgroundColor="#1F4F82" Clicked="OnRefreshSnapshotClicked" />
             <Label x:Name="StatusLabel" FontSize="13" TextColor="#315779" Text="Last synced: just now" />
-        </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 
 </ContentPage>
