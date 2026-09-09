@@ -35,7 +35,7 @@
                         <CheckBox x:Name="CompletedForDayCheckBox" />
                         <Label Text="Completed for day" VerticalOptions="Center" TextColor="#35587A" />
                     </HorizontalStackLayout>
-                    <Button Text="Create Session" BackgroundColor="#1F4F82" Clicked="OnCreateSessionClicked" />
+                    <Button Text="Create Session" BackgroundColor="#2F6FED" Clicked="OnCreateSessionClicked" />
                 </VerticalStackLayout>
             </Border>
 

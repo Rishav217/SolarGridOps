@@ -12,7 +12,7 @@
                    InputTransparent="True" />
 
             <VerticalStackLayout Padding="18,14,18,22" Spacing="12">
-            <Border BackgroundColor="#163A60" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
+            <Border BackgroundColor="#0A1A2F" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
                 <VerticalStackLayout Spacing="3">
                     <Label Text="Operations Alerts"
                            FontFamily="OpenSansSemibold"
@@ -28,32 +28,45 @@
                 <Border Grid.Row="0" Grid.Column="0" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 16" Padding="12">
                     <VerticalStackLayout>
                         <Label Text="Collections" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="INR 6.8L" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#1F4F82" />
-                        <Label Text="+11.2% vs last week" FontSize="12" TextColor="#2F8F57" />
+                        <Label Text="INR 6.8L" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#1FA463" />
+                        <Label Text="+11.2% vs last week" FontSize="12" TextColor="#1FA463" />
                     </VerticalStackLayout>
                 </Border>
                 <Border Grid.Row="0" Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 16" Padding="12">
                     <VerticalStackLayout>
                         <Label Text="Installations" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="18" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#1F4F82" />
-                        <Label Text="3 pending closure" FontSize="12" TextColor="#B04B22" />
+                        <Label Text="18" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#F5A623" />
+                        <Label Text="3 pending closure" FontSize="12" TextColor="#F5A623" />
                     </VerticalStackLayout>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="0" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 16" Padding="12">
                     <VerticalStackLayout>
                         <Label Text="Panels in Stock" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="426" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#1F4F82" />
-                        <Label Text="12 low-stock alerts" FontSize="12" TextColor="#B04B22" />
+                        <Label Text="426" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#F5A623" />
+                        <Label Text="12 low-stock alerts" FontSize="12" TextColor="#F5A623" />
                     </VerticalStackLayout>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 16" Padding="12">
                     <VerticalStackLayout>
                         <Label Text="Projects at Risk" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="2" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#B04B22" />
-                        <Label Text="Need owner follow-up" FontSize="12" TextColor="#B04B22" />
+                        <Label Text="2" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#E5484D" />
+                        <Label Text="Need owner follow-up" FontSize="12" TextColor="#E5484D" />
                     </VerticalStackLayout>
                 </Border>
             </Grid>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 16" Padding="14">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
+                    <VerticalStackLayout Grid.Column="0" Spacing="6">
+                        <Label Text="Stock Trend (30 days)" FontFamily="OpenSansSemibold" FontSize="14" TextColor="#1A3F66" />
+                        <GraphicsView x:Name="StockTrendGraphicsView" HeightRequest="90" WidthRequest="180" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="6" HorizontalOptions="Center">
+                        <Label Text="Category Mix" FontFamily="OpenSansSemibold" FontSize="14" TextColor="#1A3F66" />
+                        <GraphicsView x:Name="CategoryDonutGraphicsView" HeightRequest="90" WidthRequest="90" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
 
             <Border BackgroundColor="#FDEBEB" Stroke="#D64545" StrokeShape="RoundRectangle 14" Padding="14">
                 <VerticalStackLayout Spacing="8">
@@ -73,13 +86,13 @@
                     <Label Text="2. Upload GPS evidence for SGO-JPR-009" TextColor="#35587A" />
                     <Label Text="3. Review inverter stock movement mismatch" TextColor="#35587A" />
                     <Button Text="Open Installation Tasks"
-                            BackgroundColor="#1F4F82"
+                            BackgroundColor="#2F6FED"
                             TextColor="White"
                             Clicked="OnOpenInstallationsClicked" />
                 </VerticalStackLayout>
             </Border>
 
-            <Button Text="Refresh Snapshot" BackgroundColor="#1F4F82" Clicked="OnRefreshSnapshotClicked" />
+            <Button Text="Refresh Snapshot" BackgroundColor="#2F6FED" Clicked="OnRefreshSnapshotClicked" />
             <Label x:Name="StatusLabel" FontSize="13" TextColor="#315779" Text="Last synced: just now" />
             </VerticalStackLayout>
         </Grid>
