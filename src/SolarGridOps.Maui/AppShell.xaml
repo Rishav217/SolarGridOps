@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:SolarGridOps.Maui"
-    Title="SolarGridOps"
+    Title="SolarGridOps Command"
     FlyoutBehavior="Disabled">
 
     <ShellContent
@@ -16,27 +16,40 @@
         <ShellContent
             Title="Dashboard"
             Route="dashboard"
+            Icon="icon_dashboard.svg"
             ContentTemplate="{DataTemplate local:MainPage}" />
 
         <ShellContent
             Title="Inventory"
             Route="inventory"
+            Icon="icon_inventory.svg"
             ContentTemplate="{DataTemplate local:InventoryWorkflowPage}" />
 
         <ShellContent
             Title="Installations"
             Route="installations"
+            Icon="icon_installations.svg"
             ContentTemplate="{DataTemplate local:InstallationWorkflowPage}" />
 
         <ShellContent
-            Title="KPI"
-            Route="kpi"
+            Title="Alerts"
+            Route="alerts"
+            Icon="icon_kpi.svg"
             ContentTemplate="{DataTemplate local:KpiDashboardPage}" />
 
         <ShellContent
-            Title="Workspace"
-            Route="workspace"
+            Title="Help"
+            Route="help"
+            Icon="icon_workspace.svg"
             ContentTemplate="{DataTemplate local:NavigationHubPage}" />
+
+        <ShellContent
+            x:Name="AdminLogsTab"
+            IsVisible="False"
+            Title="Admin Logs"
+            Route="admin-logs"
+            Icon="icon_workspace.svg"
+            ContentTemplate="{DataTemplate local:AdminAuditLogsPage}" />
     </TabBar>
 
 </Shell>

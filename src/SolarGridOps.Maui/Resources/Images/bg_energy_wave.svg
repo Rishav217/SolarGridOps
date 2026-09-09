@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#EAF3FF"/>
+      <stop offset="45%" stop-color="#D5E6FA"/>
+      <stop offset="100%" stop-color="#B6D2F1"/>
+    </linearGradient>
+    <linearGradient id="waveA" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#245584" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#3A79B4" stop-opacity="0.38"/>
+    </linearGradient>
+    <linearGradient id="waveB" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4B89C2" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#245584" stop-opacity="0.30"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#sky)"/>
+  <path d="M0 590 C180 520, 340 680, 520 600 C710 515, 860 710, 1200 570 L1200 900 L0 900 Z" fill="url(#waveA)"/>
+  <path d="M0 650 C200 730, 390 560, 620 690 C810 790, 980 610, 1200 720 L1200 900 L0 900 Z" fill="url(#waveB)"/>
+  <circle cx="980" cy="140" r="70" fill="#FFFFFF" fill-opacity="0.45"/>
+  <circle cx="180" cy="230" r="52" fill="#FFFFFF" fill-opacity="0.30"/>
+</svg>

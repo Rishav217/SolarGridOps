@@ -22,7 +22,12 @@ public partial class MainPage : ContentPage
 
 	private async void OnWorkspaceClicked(object? sender, EventArgs e)
 	{
-		await Shell.Current.GoToAsync("//app/workspace");
+		await Shell.Current.GoToAsync("//app/help");
+	}
+
+	private async void OnMetricCardTapped(object? sender, EventArgs e)
+	{
+		await Navigation.PushAsync(new ProjectsListPage());
 	}
 
 	private async void OnSignOutClicked(object? sender, EventArgs e)

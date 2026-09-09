@@ -1,5 +1,6 @@
 using SolarGridOps.Application.Features.AuditTrail;
 using SolarGridOps.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace SolarGridOps.Infrastructure.Persistence.Services;
 
@@ -27,5 +28,31 @@ public class AuditTrailService : IAuditTrailService
 
         _dbContext.AuditTrailEntries.Add(entry);
         await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<AuditTrailEntryDto>> ListRecentAsync(int take, CancellationToken cancellationToken = default)
+    {
+        var clampedTake = Math.Clamp(take, 1, 250);
+
+        var query =
+            from audit in _dbContext.AuditTrailEntries.AsNoTracking()
+            join user in _dbContext.Users.AsNoTracking() on audit.CreatedByUserId equals user.Id into users
+            from actor in users.DefaultIfEmpty()
+            orderby audit.CreatedAtUtc descending
+            select new AuditTrailEntryDto
+            {
+                Id = audit.Id,
+                CreatedAtUtc = audit.CreatedAtUtc,
+                ActionKey = audit.ActionKey,
+                EntityType = audit.EntityType,
+                EntityId = audit.EntityId,
+                Details = audit.Details,
+                ActorUserId = audit.CreatedByUserId,
+                ActorName = actor != null && !string.IsNullOrWhiteSpace(actor.FullName)
+                    ? actor.FullName
+                    : "System"
+            };
+
+        return await query.Take(clampedTake).ToListAsync(cancellationToken);
     }
 }

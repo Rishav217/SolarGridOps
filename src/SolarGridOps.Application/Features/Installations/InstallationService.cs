@@ -49,7 +49,21 @@ public class InstallationService : IInstallationService
         }
 
         var sessions = await _installationRepository.ListSessionsByProjectAsync(projectId, cancellationToken);
-        return Result<IReadOnlyList<InstallationSessionDto>>.Success(sessions.Select(Map).ToList());
+        var technicianIds = sessions.Where(x => x.TechnicianUserId.HasValue).Select(x => x.TechnicianUserId!.Value);
+        var technicianNames = await _installationRepository.GetUserNamesAsync(technicianIds, cancellationToken);
+
+        var dtos = sessions.Select(session =>
+        {
+            var dto = Map(session);
+            if (session.TechnicianUserId.HasValue && technicianNames.TryGetValue(session.TechnicianUserId.Value, out var name))
+            {
+                dto.TechnicianName = name;
+            }
+
+            return dto;
+        }).ToList();
+
+        return Result<IReadOnlyList<InstallationSessionDto>>.Success(dtos);
     }
 
     public async Task<Result<InstallationEvidenceDto>> AddEvidenceAsync(Guid sessionId, AddInstallationEvidenceRequest request, CancellationToken cancellationToken = default)

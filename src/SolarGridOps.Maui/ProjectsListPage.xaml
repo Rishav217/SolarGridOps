@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SolarGridOps.Maui.ProjectsListPage"
+             Title="Projects">
+
+    <Grid RowDefinitions="Auto,*" Padding="18,14,18,16" RowSpacing="10">
+        <VerticalStackLayout Grid.Row="0" Spacing="8">
+            <Border BackgroundColor="#173A5E" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
+                <VerticalStackLayout Spacing="3">
+                    <Label Text="All Projects"
+                           FontFamily="OpenSansSemibold"
+                           FontSize="22"
+                           TextColor="White" />
+                    <Label Text="Tap any project to see the customer, panels, and site team."
+                           FontSize="13"
+                           TextColor="#CFE4FF" />
+                </VerticalStackLayout>
+            </Border>
+            <Label x:Name="StatusLabel" Text="Loading projects..." FontSize="13" TextColor="#35587A" />
+        </VerticalStackLayout>
+
+        <RefreshView Grid.Row="1" x:Name="ProjectsRefreshView" Refreshing="OnRefreshing">
+            <CollectionView x:Name="ProjectsCollectionView" SelectionMode="Single" SelectionChanged="OnProjectSelected">
+                <CollectionView.EmptyView>
+                    <Label Text="No projects found yet."
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="#4B6D90" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,0,0,10" Padding="14" Stroke="#BED5F0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 14">
+                            <Border.Shadow>
+                                <Shadow Brush="#1F4F82" Opacity="0.12" Radius="12" Offset="0,4" />
+                            </Border.Shadow>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                    <Label Text="{Binding ProjectCode}" FontFamily="OpenSansSemibold" FontSize="17" TextColor="#12385C" />
+                                    <Label Text="{Binding CustomerName, StringFormat='Customer: {0}'}" FontSize="13" TextColor="#35587A" />
+                                    <Label Text="{Binding SiteAddress}" FontSize="12" TextColor="#4B6D90" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="3" HorizontalOptions="End">
+                                    <Border BackgroundColor="#E8F1FC" Padding="8,4" StrokeThickness="0" StrokeShape="RoundRectangle 20">
+                                        <Label Text="{Binding PhaseDisplay}" FontSize="11" TextColor="#1F4F82" FontFamily="OpenSansSemibold" />
+                                    </Border>
+                                    <Label Text="{Binding CapacityDisplay}" FontSize="12" TextColor="#4B6D90" HorizontalOptions="End" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

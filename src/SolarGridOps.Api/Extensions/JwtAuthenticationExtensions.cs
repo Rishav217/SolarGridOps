@@ -71,6 +71,10 @@ public static class JwtAuthenticationExtensions
             options.AddPolicy(PermissionPolicies.InventoryMovementsRead, p => p.RequireClaim("perm", PermissionPolicies.InventoryMovementsRead));
             options.AddPolicy(PermissionPolicies.InventoryMovementsCreate, p => p.RequireClaim("perm", PermissionPolicies.InventoryMovementsCreate));
 
+            options.AddPolicy(PermissionPolicies.AuditTrailRead, p => p
+                .RequireRole("owner_admin")
+                .RequireClaim("perm", PermissionPolicies.AuditTrailRead));
+
             options.AddPolicy(PermissionPolicies.AuthCapabilities, p => p.RequireClaim("perm", PermissionPolicies.AuthCapabilities));
         });
 

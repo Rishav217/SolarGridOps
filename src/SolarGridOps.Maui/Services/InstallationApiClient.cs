@@ -57,6 +57,12 @@ public class InstallationApiClient
 
         [JsonPropertyName("isCompletedForDay")]
         public bool IsCompletedForDay { get; set; }
+
+        [JsonPropertyName("technicianName")]
+        public string? TechnicianName { get; set; }
+
+        [JsonPropertyName("closureStatus")]
+        public string? ClosureStatus { get; set; }
     }
 
     private class ApiResponse<T>

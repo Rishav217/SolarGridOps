@@ -12,7 +12,7 @@ public class AuthApiClient
         _httpClient = httpClient;
     }
 
-    public async Task<(bool IsSuccess, string? ErrorMessage, string? FullName, string? AccessToken)> LoginAsync(string usernameOrMobile, string password, CancellationToken cancellationToken = default)
+    public async Task<(bool IsSuccess, string? ErrorMessage, string? FullName, string? AccessToken, IReadOnlyList<string> Roles)> LoginAsync(string usernameOrMobile, string password, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.PostAsJsonAsync("api/v1/auth/login", new LoginPayload
         {
@@ -23,16 +23,16 @@ public class AuthApiClient
         if (!response.IsSuccessStatusCode)
         {
             var failed = await response.Content.ReadFromJsonAsync<ApiResponse<AuthResponse>>(cancellationToken: cancellationToken);
-            return (false, failed?.ErrorMessage ?? "Login failed.", null, null);
+            return (false, failed?.ErrorMessage ?? "Login failed.", null, null, []);
         }
 
         var payload = await response.Content.ReadFromJsonAsync<ApiResponse<AuthResponse>>(cancellationToken: cancellationToken);
         if (payload?.Success != true || payload.Data is null)
         {
-            return (false, payload?.ErrorMessage ?? "Invalid login response.", null, null);
+            return (false, payload?.ErrorMessage ?? "Invalid login response.", null, null, []);
         }
 
-        return (true, null, payload.Data.FullName, payload.Data.AccessToken);
+        return (true, null, payload.Data.FullName, payload.Data.AccessToken, payload.Data.Roles ?? []);
     }
 
     private sealed class LoginPayload
@@ -63,5 +63,8 @@ public class AuthApiClient
 
         [JsonPropertyName("accessToken")]
         public string AccessToken { get; set; } = string.Empty;
+
+        [JsonPropertyName("roles")]
+        public List<string>? Roles { get; set; }
     }
 }

@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarGridOps.Api.Models;
 using SolarGridOps.Api.Security;
+using SolarGridOps.Application.Features.AuditTrail;
 using SolarGridOps.Application.Features.Projects;
+using System.Security.Claims;
 
 namespace SolarGridOps.Api.Controllers;
 
@@ -12,10 +14,12 @@ namespace SolarGridOps.Api.Controllers;
 public class ProjectsController : ControllerBase
 {
     private readonly IProjectService _projectService;
+    private readonly IAuditTrailService _auditTrailService;
 
-    public ProjectsController(IProjectService projectService)
+    public ProjectsController(IProjectService projectService, IAuditTrailService auditTrailService)
     {
         _projectService = projectService;
+        _auditTrailService = auditTrailService;
     }
 
     [HttpGet]
@@ -72,6 +76,9 @@ public class ProjectsController : ControllerBase
             return BadRequest(ApiResponse<ProjectDto>.Fail(result.Error.Code, result.Error.Message));
         }
 
+        var actorUserId = GetActorUserId();
+        await _auditTrailService.RecordAsync(actorUserId, "projects.created", "project", result.Value!.Id, $"projectCode={result.Value.ProjectCode}", cancellationToken);
+
         return CreatedAtAction(nameof(GetById), new { id = result.Value!.Id }, ApiResponse<ProjectDto>.Ok(result.Value));
     }
 
@@ -90,6 +97,15 @@ public class ProjectsController : ControllerBase
             return BadRequest(ApiResponse<ProjectDto>.Fail(result.Error.Code, result.Error.Message));
         }
 
+        var actorUserId = GetActorUserId();
+        await _auditTrailService.RecordAsync(actorUserId, "projects.phase.updated", "project", result.Value!.Id, $"phase={result.Value.CurrentPhase}", cancellationToken);
+
         return Ok(ApiResponse<ProjectDto>.Ok(result.Value!));
+    }
+
+    private Guid? GetActorUserId()
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(userIdClaim, out var userId) ? userId : null;
     }
 }

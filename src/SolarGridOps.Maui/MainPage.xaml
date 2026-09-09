@@ -5,54 +5,91 @@
              Title="Dashboard">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="14">
-            <Label x:Name="WelcomeLabel"
-                   Text="Welcome"
-                   FontFamily="OpenSansSemibold"
-                   FontSize="26"
-                   TextColor="#8A3A12" />
+        <Grid>
+            <Image Source="bg_customer_solar.svg"
+                   Aspect="AspectFill"
+                   Opacity="0.22"
+                   InputTransparent="True" />
 
-            <Label Text="Live Pilot Snapshot"
-                   FontSize="14"
-                   TextColor="#6E3C20" />
+            <VerticalStackLayout Padding="18,14,18,20" Spacing="12">
+            <Border BackgroundColor="#173A5E" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="16">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Daily Operations Overview" FontFamily="OpenSansSemibold" FontSize="22" TextColor="White" />
+                    <Label x:Name="WelcomeLabel" Text="Welcome" FontSize="14" TextColor="#CFE4FF" />
+                </VerticalStackLayout>
+            </Border>
 
             <Grid ColumnDefinitions="*,*" ColumnSpacing="10" RowDefinitions="Auto,Auto" RowSpacing="10">
-                <Border Grid.Row="0" Grid.Column="0" BackgroundColor="#FFF9EF" Stroke="#F1C7A0" StrokeShape="RoundRectangle 14" Padding="12">
+                <Border Grid.Row="0" Grid.Column="0" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="12">
+                    <Border.Shadow>
+                        <Shadow Brush="#1F4F82" Opacity="0.12" Radius="10" Offset="0,3" />
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMetricCardTapped" />
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout>
-                        <Label Text="Active Projects" FontSize="13" TextColor="#9C5D35" />
-                        <Label Text="12" FontFamily="OpenSansSemibold" FontSize="24" TextColor="#6E2D10" />
+                        <Label Text="Active Projects" FontSize="12" TextColor="#4B6D90" />
+                        <Label Text="12" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#1F4F82" />
+                        <Label Text="Tap to view list" FontSize="11" TextColor="#7C9BC0" />
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Grid.Row="0" Grid.Column="1" BackgroundColor="#FFF9EF" Stroke="#F1C7A0" StrokeShape="RoundRectangle 14" Padding="12">
+                <Border Grid.Row="0" Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="12">
+                    <Border.Shadow>
+                        <Shadow Brush="#1F4F82" Opacity="0.12" Radius="10" Offset="0,3" />
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMetricCardTapped" />
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout>
-                        <Label Text="Install Sessions" FontSize="13" TextColor="#9C5D35" />
-                        <Label Text="27" FontFamily="OpenSansSemibold" FontSize="24" TextColor="#6E2D10" />
+                        <Label Text="Install Sessions" FontSize="12" TextColor="#4B6D90" />
+                        <Label Text="27" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#1F4F82" />
+                        <Label Text="Tap to view list" FontSize="11" TextColor="#7C9BC0" />
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Grid.Row="1" Grid.Column="0" BackgroundColor="#FFF9EF" Stroke="#F1C7A0" StrokeShape="RoundRectangle 14" Padding="12">
+                <Border Grid.Row="1" Grid.Column="0" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="12">
+                    <Border.Shadow>
+                        <Shadow Brush="#1F4F82" Opacity="0.12" Radius="10" Offset="0,3" />
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMetricCardTapped" />
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout>
-                        <Label Text="Panels Assigned" FontSize="13" TextColor="#9C5D35" />
-                        <Label Text="344" FontFamily="OpenSansSemibold" FontSize="24" TextColor="#6E2D10" />
+                        <Label Text="Panels Assigned" FontSize="12" TextColor="#4B6D90" />
+                        <Label Text="344" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#1F4F82" />
+                        <Label Text="Tap to view list" FontSize="11" TextColor="#7C9BC0" />
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Grid.Row="1" Grid.Column="1" BackgroundColor="#FFF9EF" Stroke="#F1C7A0" StrokeShape="RoundRectangle 14" Padding="12">
+                <Border Grid.Row="1" Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="12">
+                    <Border.Shadow>
+                        <Shadow Brush="#1F4F82" Opacity="0.12" Radius="10" Offset="0,3" />
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMetricCardTapped" />
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout>
-                        <Label Text="Pending Closures" FontSize="13" TextColor="#9C5D35" />
-                        <Label Text="3" FontFamily="OpenSansSemibold" FontSize="24" TextColor="#6E2D10" />
+                        <Label Text="Pending Closures" FontSize="12" TextColor="#4B6D90" />
+                        <Label Text="3" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#B04B22" />
+                        <Label Text="Tap to view list" FontSize="11" TextColor="#7C9BC0" />
                     </VerticalStackLayout>
                 </Border>
             </Grid>
 
-            <Button Text="Go To Workspace"
-                    Clicked="OnWorkspaceClicked" />
+            <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="14">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Today's Priority Tasks" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#1A3F66" />
+                    <Label Text="1. Approve closure requests pending more than 24 hours." TextColor="#35587A" />
+                    <Label Text="2. Complete missing GPS proof for active installations." TextColor="#35587A" />
+                    <Label Text="3. Reconcile panel movement variance before dispatch." TextColor="#35587A" />
+                </VerticalStackLayout>
+            </Border>
 
-            <Button Text="Sign Out"
-                    BackgroundColor="#B2471C"
-                    Clicked="OnSignOutClicked" />
-        </VerticalStackLayout>
+            <Button Text="Open Help and Tools" Clicked="OnWorkspaceClicked" BackgroundColor="#1F4F82" />
+            <Button Text="Sign Out" BackgroundColor="#AA4B2A" Clicked="OnSignOutClicked" />
+            </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 
 </ContentPage>

@@ -3,14 +3,54 @@ using SolarGridOps.Maui.Services;
 
 namespace SolarGridOps.Maui;
 
+[QueryProperty(nameof(AlertMessage), "alert")]
+[QueryProperty(nameof(IncomingProjectId), "projectId")]
 public partial class InventoryWorkflowPage : ContentPage
 {
     private readonly InventoryApiClient _inventoryApiClient;
+    private string? _alertMessage;
+
+    public string? AlertMessage
+    {
+        get => _alertMessage;
+        set
+        {
+            _alertMessage = value;
+            UpdateAlertBanner();
+        }
+    }
+
+    public string? IncomingProjectId
+    {
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return;
+            }
+
+            ProjectIdEntry.Text = Uri.UnescapeDataString(value);
+            OnRefreshClicked(this, EventArgs.Empty);
+        }
+    }
 
     public InventoryWorkflowPage()
     {
         InitializeComponent();
         _inventoryApiClient = App.Services.GetRequiredService<InventoryApiClient>();
+        UpdateAlertBanner();
+    }
+
+    private void UpdateAlertBanner()
+    {
+        if (AlertBanner is null || AlertBannerLabel is null)
+        {
+            return;
+        }
+
+        var message = string.IsNullOrWhiteSpace(_alertMessage) ? null : Uri.UnescapeDataString(_alertMessage);
+        AlertBanner.IsVisible = !string.IsNullOrWhiteSpace(message);
+        AlertBannerLabel.Text = message ?? string.Empty;
     }
 
     private async void OnRefreshClicked(object? sender, EventArgs e)

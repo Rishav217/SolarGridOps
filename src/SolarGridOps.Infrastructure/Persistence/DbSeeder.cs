@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SolarGridOps.Domain.Entities;
 using SolarGridOps.Domain.Enums;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace SolarGridOps.Infrastructure.Persistence;
 
@@ -36,6 +38,7 @@ public static class DbSeeder
             ("inventory.inverters.create", "Create Inventory Inverters"),
             ("inventory.movements.read", "Read Inventory Movements"),
             ("inventory.movements.create", "Create Inventory Movements"),
+            ("audit.trail.read", "Read Audit Trail"),
             ("auth.capabilities", "Read Capabilities")
         };
 
@@ -125,6 +128,13 @@ public static class DbSeeder
 
     private static async Task SeedSampleDataAsync(AppDbContext db, CancellationToken cancellationToken)
     {
+        var sampleRoot = TryResolveSampleRoot();
+        if (!string.IsNullOrWhiteSpace(sampleRoot) && Directory.Exists(sampleRoot))
+        {
+            await SeedSampleDataFromFoldersAsync(db, sampleRoot, cancellationToken);
+            return;
+        }
+
         var hasSampleData = await db.Projects.AnyAsync(x => x.ProjectCode.StartsWith("SGO-SAMPLE-"), cancellationToken);
         if (hasSampleData)
         {
@@ -399,5 +409,305 @@ public static class DbSeeder
                 FilePath = "sample/receipts/rcpt-sgo-2002.pdf",
                 Notes = "Full payment received"
             });
+    }
+
+    private static async Task SeedSampleDataFromFoldersAsync(AppDbContext db, string sampleRoot, CancellationToken cancellationToken)
+    {
+        var projectCode = "SGO-SAMPLE-DURGESH-001";
+        var exists = await db.Projects.AnyAsync(x => x.ProjectCode == projectCode, cancellationToken);
+        if (exists)
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+        var durgeshFolder = FindNestedFolder(sampleRoot, "Durgesh Gaju");
+        if (string.IsNullOrWhiteSpace(durgeshFolder) || !Directory.Exists(durgeshFolder))
+        {
+            return;
+        }
+
+        var customer = new Customer
+        {
+            FullName = "Durgesh Gaju",
+            PhoneNumber = "9898989898",
+            AlternatePhone = "9898989800",
+            Address = "Raya",
+            City = "Mathura",
+            State = "Uttar Pradesh",
+            PanNumber = "DURGESH-PAN",
+            BankName = "Sample Bank",
+            BankAccountNumber = "000000000000",
+            BankIFSC = "SAMP0000001",
+            Notes = "Seeded from local sample folder data/Sample."
+        };
+        db.Customers.Add(customer);
+        await db.SaveChangesAsync(cancellationToken);
+
+        var project = new Project
+        {
+            CustomerId = customer.Id,
+            ProjectCode = projectCode,
+            CapacityKW = 3.00m,
+            CurrentPhase = ProjectPhase.Installation,
+            InstallationStartDate = now.AddDays(-30),
+            InstallationEndDate = now.AddDays(2),
+            SiteAddress = "Raya, Mathura",
+            Notes = "Project seeded from direct sample files provided by client."
+        };
+        db.Projects.Add(project);
+        await db.SaveChangesAsync(cancellationToken);
+
+        var session = new InstallationSession
+        {
+            ProjectId = project.Id,
+            SessionDateUtc = now.AddDays(-1),
+            WorkSummary = "Sample first-run installation session seeded from folder files.",
+            IsCompletedForDay = true
+        };
+        db.InstallationSessions.Add(session);
+        await db.SaveChangesAsync(cancellationToken);
+
+        var files = Directory.GetFiles(durgeshFolder, "*", SearchOption.TopDirectoryOnly)
+            .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var images = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+        var documentExt = new[] { ".pdf", ".doc", ".docx", ".xlsx", ".xls", ".jpg", ".jpeg", ".png" };
+
+        var customerDocuments = new List<CustomerDocument>();
+        var evidenceItems = new List<InstallationEvidence>();
+        var invoices = new List<InvoiceRecord>();
+        var receipts = new List<PaymentReceipt>();
+
+        var invoiceIndex = 1;
+        var receiptIndex = 1;
+
+        foreach (var file in files)
+        {
+            var ext = Path.GetExtension(file);
+            var fileName = Path.GetFileName(file);
+            var relativePath = NormalizeRelativePath(file);
+            var inferredType = InferDocumentType(fileName);
+
+            if (documentExt.Contains(ext, StringComparer.OrdinalIgnoreCase))
+            {
+                customerDocuments.Add(new CustomerDocument
+                {
+                    CustomerId = customer.Id,
+                    DocumentType = inferredType,
+                    FileName = TrimTo(fileName, 250),
+                    OriginalFileName = TrimTo(fileName, 250),
+                    FilePath = TrimTo(relativePath, 500),
+                    Notes = "Imported from local sample folder",
+                    UploadedAtUtc = now.AddMinutes(-invoiceIndex)
+                });
+            }
+
+            if (images.Contains(ext, StringComparer.OrdinalIgnoreCase))
+            {
+                evidenceItems.Add(new InstallationEvidence
+                {
+                    InstallationSessionId = session.Id,
+                    FilePath = TrimTo(relativePath, 500),
+                    FileName = TrimTo(fileName, 250),
+                    MediaType = "Photo",
+                    CapturedAtUtc = now.AddMinutes(-receiptIndex),
+                    Notes = "Imported from local sample folder"
+                });
+            }
+
+            if (fileName.Contains("invoice", StringComparison.OrdinalIgnoreCase))
+            {
+                invoices.Add(new InvoiceRecord
+                {
+                    ProjectId = project.Id,
+                    InvoiceNumber = TrimTo($"INV-DURG-{invoiceIndex:000}", 60),
+                    Amount = 0m,
+                    InvoiceDateUtc = now.AddDays(-invoiceIndex),
+                    FilePath = TrimTo(relativePath, 500),
+                    Notes = "Imported from local sample folder"
+                });
+                invoiceIndex++;
+            }
+
+            if (fileName.Contains("receipt", StringComparison.OrdinalIgnoreCase) || fileName.Contains("ackn", StringComparison.OrdinalIgnoreCase))
+            {
+                receipts.Add(new PaymentReceipt
+                {
+                    ProjectId = project.Id,
+                    Amount = 0m,
+                    ReceiptDateUtc = now.AddDays(-receiptIndex),
+                    PaymentMode = "Unknown",
+                    ReceiptNumber = TrimTo($"RCPT-DURG-{receiptIndex:000}", 60),
+                    FilePath = TrimTo(relativePath, 500),
+                    Notes = "Imported from local sample folder"
+                });
+                receiptIndex++;
+            }
+        }
+
+        if (customerDocuments.Count > 0)
+        {
+            db.CustomerDocuments.AddRange(customerDocuments);
+        }
+
+        if (evidenceItems.Count > 0)
+        {
+            db.InstallationEvidence.AddRange(evidenceItems);
+        }
+
+        if (invoices.Count > 0)
+        {
+            db.InvoiceRecords.AddRange(invoices);
+        }
+
+        if (receipts.Count > 0)
+        {
+            db.PaymentReceipts.AddRange(receipts);
+        }
+
+        var panelsFolder = FindNestedFolder(sampleRoot, "PANELS DETAILS OF CUSTOMERS");
+        if (!string.IsNullOrWhiteSpace(panelsFolder) && Directory.Exists(panelsFolder))
+        {
+            var panelFiles = Directory.GetFiles(panelsFolder, "*.xlsx", SearchOption.TopDirectoryOnly)
+                .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+                .Take(40)
+                .ToList();
+
+            var panelAssignments = new List<PanelAssignment>();
+            var inverterAssignments = new List<InverterAssignment>();
+            var serialIndex = 1;
+
+            foreach (var panelFile in panelFiles)
+            {
+                var fileName = Path.GetFileNameWithoutExtension(panelFile);
+                var normalizedName = NormalizeNameFromFileName(fileName);
+
+                if (fileName.Contains("inverter", StringComparison.OrdinalIgnoreCase))
+                {
+                    inverterAssignments.Add(new InverterAssignment
+                    {
+                        ProjectId = project.Id,
+                        SerialNumber = TrimTo($"INV-SAMPLE-{serialIndex:000}", 100),
+                        CapacityKva = 0m,
+                        Brand = "Unknown",
+                        Model = TrimTo(normalizedName, 100),
+                        AssignedAtUtc = now.AddDays(-serialIndex),
+                        Notes = "From panel detail workbook file name"
+                    });
+                }
+                else
+                {
+                    panelAssignments.Add(new PanelAssignment
+                    {
+                        ProjectId = project.Id,
+                        SerialNumber = TrimTo($"PNL-SAMPLE-{serialIndex:000}", 100),
+                        Wattage = 0,
+                        Brand = "Unknown",
+                        Model = TrimTo(normalizedName, 100),
+                        AssignedAtUtc = now.AddDays(-serialIndex),
+                        Notes = "From panel detail workbook file name"
+                    });
+                }
+
+                serialIndex++;
+            }
+
+            if (panelAssignments.Count > 0)
+            {
+                db.PanelAssignments.AddRange(panelAssignments);
+            }
+
+            if (inverterAssignments.Count > 0)
+            {
+                db.InverterAssignments.AddRange(inverterAssignments);
+            }
+        }
+    }
+
+    private static string? TryResolveSampleRoot()
+    {
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        while (current is not null)
+        {
+            var candidate = Path.Combine(current.FullName, "data", "Sample");
+            if (Directory.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            current = current.Parent;
+        }
+
+        return null;
+    }
+
+    private static string? FindNestedFolder(string root, string folderName)
+    {
+        var direct = Path.Combine(root, folderName);
+        if (!Directory.Exists(direct))
+        {
+            return null;
+        }
+
+        var nested = Path.Combine(direct, folderName);
+        return Directory.Exists(nested) ? nested : direct;
+    }
+
+    private static DocumentType InferDocumentType(string fileName)
+    {
+        if (fileName.Contains("pan", StringComparison.OrdinalIgnoreCase)) return DocumentType.PAN;
+        if (fileName.Contains("bank", StringComparison.OrdinalIgnoreCase)) return DocumentType.BankDetails;
+        if (fileName.Contains("agreement", StringComparison.OrdinalIgnoreCase)) return DocumentType.UserAgreement;
+        if (fileName.Contains("approval", StringComparison.OrdinalIgnoreCase)) return DocumentType.DigitalApproval;
+        if (fileName.Contains("quotation", StringComparison.OrdinalIgnoreCase)) return DocumentType.Quotation;
+        if (fileName.Contains("feasibility", StringComparison.OrdinalIgnoreCase)) return DocumentType.Feasibility;
+        if (fileName.Contains("invoice", StringComparison.OrdinalIgnoreCase)) return DocumentType.TaxInvoice;
+        if (fileName.Contains("dcr", StringComparison.OrdinalIgnoreCase)) return DocumentType.DCRUndertaking;
+        if (fileName.Contains("netmeter", StringComparison.OrdinalIgnoreCase)) return DocumentType.NetMeter;
+        if (fileName.Contains("subsidy", StringComparison.OrdinalIgnoreCase)) return DocumentType.Subsidy;
+        if (fileName.Contains("receipt", StringComparison.OrdinalIgnoreCase)) return DocumentType.CashReceipt;
+        if (fileName.Contains("gps", StringComparison.OrdinalIgnoreCase)) return DocumentType.GPSPhoto;
+        if (fileName.Contains("ackn", StringComparison.OrdinalIgnoreCase)) return DocumentType.Acknowledgment;
+        return DocumentType.Other;
+    }
+
+    private static string NormalizeRelativePath(string fullPath)
+    {
+        var cwd = Directory.GetCurrentDirectory();
+        var relative = Path.GetRelativePath(cwd, fullPath);
+        return relative.Replace('\\', '/');
+    }
+
+    private static string NormalizeNameFromFileName(string raw)
+    {
+        var cleaned = Regex.Replace(raw, "\\s+", " ").Trim();
+        cleaned = cleaned.Replace("PANELS DETAILS", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("PANELS S.NO.", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("INVERTER Sr.No.", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Trim(' ', '-', '_', '.');
+
+        if (string.IsNullOrWhiteSpace(cleaned))
+        {
+            cleaned = "SampleModel";
+        }
+
+        return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(cleaned.ToLowerInvariant());
+    }
+
+    private static string TrimTo(string value, int maxLength)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        if (value.Length <= maxLength)
+        {
+            return value;
+        }
+
+        return value[..maxLength];
     }
 }

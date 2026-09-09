@@ -5,48 +5,127 @@
              Title="Sign In"
              Shell.TabBarIsVisible="False">
 
-    <Grid>
-        <Grid.Background>
-            <LinearGradientBrush EndPoint="1,1">
-                <GradientStop Color="#FFF7E8" Offset="0.0" />
-                <GradientStop Color="#FFE8D2" Offset="0.5" />
-                <GradientStop Color="#FFD8B2" Offset="1.0" />
-            </LinearGradientBrush>
-        </Grid.Background>
+    <ScrollView>
+        <Grid x:Name="RootGrid">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="1,1">
+                    <GradientStop Color="#EAF3FF" Offset="0.0" />
+                    <GradientStop Color="#CFE0F8" Offset="0.55" />
+                    <GradientStop Color="#B7D1F4" Offset="1.0" />
+                </LinearGradientBrush>
+            </Grid.Background>
 
-        <VerticalStackLayout Padding="24,32" Spacing="18" VerticalOptions="Center">
-            <Label Text="SolarGridOps"
-                   FontFamily="OpenSansSemibold"
-                   FontSize="34"
-                   TextColor="#8A3A12" />
-            <Label Text="Field-first operations for reliable installs"
-                   FontSize="14"
-                   TextColor="#5C2E1A" />
+                 <Image Source="bg_customer_solar.svg"
+                   Aspect="AspectFill"
+                     Opacity="0.24"
+                   InputTransparent="True" />
 
-            <Border BackgroundColor="#FFFDF8" Stroke="#F1C7A0" StrokeShape="RoundRectangle 16" Padding="18">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Sign In" FontFamily="OpenSansSemibold" FontSize="22" TextColor="#663014" />
+            <Border x:Name="OrbOne"
+                    WidthRequest="220"
+                    HeightRequest="220"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start"
+                    Margin="0,-70,-55,0"
+                    BackgroundColor="#7AB0E3"
+                    Opacity="0.22"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 110"
+                    InputTransparent="True" />
 
-                    <Entry x:Name="UsernameEntry"
-                           Placeholder="Mobile Number"
-                           Keyboard="Telephone"
-                           Text="9999999999" />
+            <Border x:Name="OrbTwo"
+                    WidthRequest="160"
+                    HeightRequest="160"
+                    HorizontalOptions="Start"
+                    VerticalOptions="End"
+                    Margin="-35,0,0,-30"
+                    BackgroundColor="#2E679E"
+                    Opacity="0.17"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 80"
+                    InputTransparent="True" />
 
-                    <Entry x:Name="PasswordEntry"
-                           Placeholder="Password"
-                           IsPassword="True"
-                           Text="Admin@123" />
+            <VerticalStackLayout Padding="22,28" Spacing="14" VerticalOptions="Center">
+                <Border BackgroundColor="#12375B" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="18,16">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Image Source="icon_customer_portal.svg"
+                               WidthRequest="46"
+                               HeightRequest="46"
+                               VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="SolarGridOps"
+                                   FontFamily="OpenSansSemibold"
+                                   FontSize="28"
+                                   TextColor="White" />
+                            <Label Text="Customer &amp; Field Portal"
+                                   FontSize="13"
+                                   TextColor="#E0EEFF" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
 
-                    <Button x:Name="SignInButton"
-                            Text="Continue"
-                            Clicked="OnSignInClicked" />
-                </VerticalStackLayout>
-            </Border>
+                <Border BackgroundColor="#FFFFFF" Stroke="#98B6DA" StrokeShape="RoundRectangle 18" Padding="18">
+                    <VerticalStackLayout Spacing="12">
+                           <Label Text="Sign in to continue"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="21"
+                               TextColor="#102C47" />
 
-            <Label x:Name="StatusLabel"
-                   Text=""
-                   FontSize="13"
-                   TextColor="#7A3A18" />
-        </VerticalStackLayout>
-    </Grid>
+                        <Label Text="Username or mobile"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="13"
+                               TextColor="#1A3F63" />
+                        <Border BackgroundColor="#F6FAFF" Stroke="#C2D6F0" StrokeShape="RoundRectangle 10" Padding="10,6">
+                            <Entry x:Name="UsernameEntry"
+                                Placeholder="Enter username"
+                                Keyboard="Default"
+                                BackgroundColor="#FFFFFF"
+                                TextColor="#061521"
+                                PlaceholderColor="#5A7088"
+                                FontSize="16"
+                                   ClearButtonVisibility="WhileEditing" />
+                        </Border>
+
+                        <Label Text="Password"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="13"
+                               TextColor="#1A3F63" />
+                        <Border BackgroundColor="#F6FAFF" Stroke="#C2D6F0" StrokeShape="RoundRectangle 10" Padding="10,6">
+                            <Entry x:Name="PasswordEntry"
+                                   Placeholder="Enter password"
+                                   IsPassword="True"
+                                BackgroundColor="#FFFFFF"
+                                TextColor="#061521"
+                                PlaceholderColor="#5A7088"
+                                FontSize="16"
+                                   ClearButtonVisibility="WhileEditing" />
+                        </Border>
+
+                           <Label x:Name="StatusLabel"
+                               Text=""
+                               IsVisible="False"
+                               FontSize="13"
+                               TextColor="#C62828" />
+
+                        <HorizontalStackLayout Spacing="8">
+                            <CheckBox x:Name="ShowPasswordCheckBox" CheckedChanged="OnShowPasswordCheckedChanged" />
+                            <Label Text="Show password"
+                                   VerticalOptions="Center"
+                                   FontSize="13"
+                                   TextColor="#1A3F63" />
+                        </HorizontalStackLayout>
+
+                        <Button x:Name="SignInButton"
+                                Text="Sign In"
+                                BackgroundColor="#1F4F82"
+                                TextColor="White"
+                                Clicked="OnSignInClicked" />
+
+                        <Label Text="Sample login for pilot: owner@solargridops.local / Admin@123"
+                               FontSize="12"
+                               TextColor="#3D6288" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
 </ContentPage>

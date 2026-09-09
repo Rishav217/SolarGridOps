@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using SolarGridOps.Api.Extensions;
@@ -8,7 +9,8 @@ using SolarGridOps.Infrastructure.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Services ────────────────────────────────────────────────
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddOpenApi();
 
 // auto-registers all validators found in the Application assembly
