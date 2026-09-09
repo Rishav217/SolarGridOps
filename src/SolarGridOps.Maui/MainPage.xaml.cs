@@ -25,6 +25,11 @@ public partial class MainPage : ContentPage
 		await Shell.Current.GoToAsync("//app/help");
 	}
 
+	private async void OnMetricCardTapped(object? sender, EventArgs e)
+	{
+		await Navigation.PushAsync(new ProjectsListPage());
+	}
+
 	private async void OnSignOutClicked(object? sender, EventArgs e)
 	{
 		_sessionState.Clear();

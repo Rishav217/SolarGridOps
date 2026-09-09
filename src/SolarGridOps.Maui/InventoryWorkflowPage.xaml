@@ -8,7 +8,7 @@
         <Grid>
             <Image Source="bg_inventory_panels.svg"
                    Aspect="AspectFill"
-                   Opacity="0.20"
+                   Opacity="0.24"
                    InputTransparent="True" />
 
             <VerticalStackLayout Padding="18,14,18,22" Spacing="12">

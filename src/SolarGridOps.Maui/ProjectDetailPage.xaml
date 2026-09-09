@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SolarGridOps.Maui.ProjectDetailPage"
+             Title="Project Details">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="18,14,18,22" Spacing="12">
+            <Border BackgroundColor="#173A5E" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
+                <VerticalStackLayout Spacing="3">
+                    <Label x:Name="ProjectCodeLabel" Text="Project" FontFamily="OpenSansSemibold" FontSize="22" TextColor="White" />
+                    <Label x:Name="ProjectMetaLabel" Text="" FontSize="13" TextColor="#CFE4FF" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label x:Name="StatusLabel" Text="Loading project details..." FontSize="13" TextColor="#35587A" />
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="14">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Customer" FontFamily="OpenSansSemibold" FontSize="17" TextColor="#1A3F66" />
+                    <Label x:Name="CustomerNameLabel" Text="-" FontSize="15" TextColor="#12385C" />
+                    <Label x:Name="CustomerPhoneLabel" Text="" FontSize="13" TextColor="#4B6D90" />
+                    <Label x:Name="CustomerAddressLabel" Text="" FontSize="13" TextColor="#4B6D90" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="14">
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Panels at This Site" FontFamily="OpenSansSemibold" FontSize="17" TextColor="#1A3F66" />
+                        <Label Grid.Column="1" x:Name="PanelCountLabel" Text="" FontSize="13" TextColor="#4B6D90" />
+                    </Grid>
+                    <CollectionView x:Name="PanelsCollectionView" HeightRequest="180">
+                        <CollectionView.EmptyView>
+                            <Label Text="No panels recorded for this project yet." FontSize="13" TextColor="#4B6D90" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,6" Padding="8" Stroke="#DDE9F8" BackgroundColor="#F8FBFF" StrokeShape="RoundRectangle 10">
+                                    <VerticalStackLayout>
+                                        <Label Text="{Binding SerialNumber}" FontFamily="OpenSansSemibold" FontSize="14" TextColor="#1A3F66" />
+                                        <Label Text="{Binding SummaryLine}" FontSize="12" TextColor="#4B6D90" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Button Text="Open Full Stock Management" BackgroundColor="#2A6BA6" Clicked="OnOpenStockClicked" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="14">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Installation Team and Progress" FontFamily="OpenSansSemibold" FontSize="17" TextColor="#1A3F66" />
+                    <CollectionView x:Name="SessionsCollectionView" HeightRequest="220">
+                        <CollectionView.EmptyView>
+                            <Label Text="No installation sessions logged yet." FontSize="13" TextColor="#4B6D90" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,6" Padding="8" Stroke="#DDE9F8" BackgroundColor="#F8FBFF" StrokeShape="RoundRectangle 10">
+                                    <VerticalStackLayout>
+                                        <Label Text="{Binding DateLine}" FontFamily="OpenSansSemibold" FontSize="13" TextColor="#1A3F66" />
+                                        <Label Text="{Binding TechnicianLine}" FontSize="12" TextColor="#35587A" />
+                                        <Label Text="{Binding SummaryLine}" FontSize="12" TextColor="#4B6D90" />
+                                        <Label Text="{Binding StatusLine}" FontSize="12" TextColor="#B04B22" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
