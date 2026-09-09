@@ -28,6 +28,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<AuthApiClient>();
 		builder.Services.AddTransient<InventoryApiClient>();
 		builder.Services.AddTransient<InstallationApiClient>();
+		builder.Services.AddTransient<AdminAuditApiClient>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

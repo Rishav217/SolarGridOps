@@ -60,7 +60,7 @@ public partial class LoginPage : ContentPage
                 return;
             }
 
-            _sessionState.SetAuthenticated(result.AccessToken, result.FullName);
+            _sessionState.SetAuthenticated(result.AccessToken, result.FullName, result.Roles);
             ClearStatus();
             await Shell.Current.GoToAsync("//app/dashboard");
         }

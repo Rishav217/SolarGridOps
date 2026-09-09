@@ -42,6 +42,14 @@
             Route="help"
             Icon="icon_workspace.svg"
             ContentTemplate="{DataTemplate local:NavigationHubPage}" />
+
+        <ShellContent
+            x:Name="AdminLogsTab"
+            IsVisible="False"
+            Title="Admin Logs"
+            Route="admin-logs"
+            Icon="icon_workspace.svg"
+            ContentTemplate="{DataTemplate local:AdminAuditLogsPage}" />
     </TabBar>
 
 </Shell>

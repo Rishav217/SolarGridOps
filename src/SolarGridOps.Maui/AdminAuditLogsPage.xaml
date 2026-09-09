@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SolarGridOps.Maui.AdminAuditLogsPage"
+             Title="Admin Activity Logs">
+
+    <Grid RowDefinitions="Auto,*" Padding="18,14,18,16" RowSpacing="10">
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+            <Border BackgroundColor="#173A5E" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
+                <VerticalStackLayout Spacing="3">
+                    <Label Text="Admin Activity Logs"
+                           FontFamily="OpenSansSemibold"
+                           FontSize="22"
+                           TextColor="White" />
+                    <Label Text="Track all key actions performed by any user."
+                           FontSize="13"
+                           TextColor="#CFE4FF" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Refresh Logs" BackgroundColor="#1F4F82" Clicked="OnRefreshClicked" />
+            <Label x:Name="StatusLabel" Text="" FontSize="13" TextColor="#35587A" />
+        </VerticalStackLayout>
+
+        <CollectionView Grid.Row="1" x:Name="LogsCollectionView">
+            <CollectionView.EmptyView>
+                <Label Text="No activity entries found."
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="#4B6D90" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="0,0,0,8" Padding="12" Stroke="#BED5F0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding ActionKey}" FontFamily="OpenSansSemibold" TextColor="#1A3F66" />
+                            <Label Text="{Binding MetaLine}" FontSize="12" TextColor="#4B6D90" />
+                            <Label Text="{Binding Details}" FontSize="12" TextColor="#35587A" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
