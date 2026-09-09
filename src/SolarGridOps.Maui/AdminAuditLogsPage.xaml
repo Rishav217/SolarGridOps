@@ -6,7 +6,7 @@
 
     <Grid RowDefinitions="Auto,*" Padding="18,14,18,16" RowSpacing="10">
         <VerticalStackLayout Grid.Row="0" Spacing="10">
-            <Border BackgroundColor="#173A5E" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
+            <Border BackgroundColor="#0A1A2F" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
                 <VerticalStackLayout Spacing="3">
                     <Label Text="Admin Activity Logs"
                            FontFamily="OpenSansSemibold"
@@ -18,7 +18,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Button Text="Refresh Logs" BackgroundColor="#1F4F82" Clicked="OnRefreshClicked" />
+            <Button Text="Refresh Logs" BackgroundColor="#2F6FED" Clicked="OnRefreshClicked" />
             <Label x:Name="StatusLabel" Text="" FontSize="13" TextColor="#35587A" />
         </VerticalStackLayout>
 

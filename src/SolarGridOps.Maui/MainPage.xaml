@@ -12,7 +12,7 @@
                    InputTransparent="True" />
 
             <VerticalStackLayout Padding="18,14,18,20" Spacing="12">
-            <Border BackgroundColor="#173A5E" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="16">
+            <Border BackgroundColor="#0A1A2F" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="16">
                 <VerticalStackLayout Spacing="4">
                     <Label Text="Daily Operations Overview" FontFamily="OpenSansSemibold" FontSize="22" TextColor="White" />
                     <Label x:Name="WelcomeLabel" Text="Welcome" FontSize="14" TextColor="#CFE4FF" />
@@ -86,7 +86,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Button Text="Open Help and Tools" Clicked="OnWorkspaceClicked" BackgroundColor="#1F4F82" />
+            <Button Text="Open Help and Tools" Clicked="OnWorkspaceClicked" BackgroundColor="#2F6FED" />
             <Button Text="Sign Out" BackgroundColor="#AA4B2A" Clicked="OnSignOutClicked" />
             </VerticalStackLayout>
         </Grid>

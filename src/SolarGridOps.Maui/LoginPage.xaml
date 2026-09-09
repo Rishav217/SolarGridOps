@@ -45,7 +45,7 @@
                     InputTransparent="True" />
 
             <VerticalStackLayout Padding="22,28" Spacing="14" VerticalOptions="Center">
-                <Border BackgroundColor="#12375B" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="18,16">
+                <Border BackgroundColor="#0A1A2F" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="18,16">
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                         <Image Source="icon_customer_portal.svg"
                                WidthRequest="46"
@@ -116,7 +116,7 @@
 
                         <Button x:Name="SignInButton"
                                 Text="Sign In"
-                                BackgroundColor="#1F4F82"
+                                BackgroundColor="#2F6FED"
                                 TextColor="White"
                                 Clicked="OnSignInClicked" />
 
