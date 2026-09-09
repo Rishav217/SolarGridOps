@@ -5,6 +5,8 @@ namespace SolarGridOps.Maui;
 
 public partial class LoginPage : ContentPage
 {
+    private static readonly Color ErrorTextColor = Color.FromArgb("#C62828");
+    private static readonly Color InfoTextColor = Color.FromArgb("#1F4F82");
     private readonly AuthApiClient _authApiClient;
     private readonly SessionState _sessionState;
     private CancellationTokenSource? _backgroundAnimationCts;
@@ -14,6 +16,8 @@ public partial class LoginPage : ContentPage
         InitializeComponent();
         _authApiClient = App.Services.GetRequiredService<AuthApiClient>();
         _sessionState = App.Services.GetRequiredService<SessionState>();
+        UsernameEntry.TextChanged += OnCredentialEdited;
+        PasswordEntry.TextChanged += OnCredentialEdited;
     }
 
     protected override void OnAppearing()
@@ -40,33 +44,55 @@ public partial class LoginPage : ContentPage
     {
         if (string.IsNullOrWhiteSpace(UsernameEntry.Text) || string.IsNullOrWhiteSpace(PasswordEntry.Text))
         {
-            StatusLabel.Text = "Enter username/mobile and password.";
+            SetStatus("Enter username/mobile and password.", isError: true);
             return;
         }
 
         SignInButton.IsEnabled = false;
-        StatusLabel.Text = "Signing in...";
+        SetStatus("Signing in...", isError: false);
 
         try
         {
             var result = await _authApiClient.LoginAsync(UsernameEntry.Text.Trim(), PasswordEntry.Text);
             if (!result.IsSuccess || string.IsNullOrWhiteSpace(result.AccessToken) || string.IsNullOrWhiteSpace(result.FullName))
             {
-                StatusLabel.Text = result.ErrorMessage ?? "Invalid credentials.";
+                SetStatus(result.ErrorMessage ?? "Invalid username or password.", isError: true);
                 return;
             }
 
             _sessionState.SetAuthenticated(result.AccessToken, result.FullName);
+            ClearStatus();
             await Shell.Current.GoToAsync("//app/dashboard");
         }
         catch (Exception)
         {
-            StatusLabel.Text = "Unable to reach server. Verify API URL and network.";
+            SetStatus("Unable to reach server. Verify API URL and network.", isError: true);
         }
         finally
         {
             SignInButton.IsEnabled = true;
         }
+    }
+
+    private void OnCredentialEdited(object? sender, TextChangedEventArgs e)
+    {
+        if (StatusLabel.IsVisible && StatusLabel.TextColor == ErrorTextColor)
+        {
+            ClearStatus();
+        }
+    }
+
+    private void SetStatus(string message, bool isError)
+    {
+        StatusLabel.Text = message;
+        StatusLabel.TextColor = isError ? ErrorTextColor : InfoTextColor;
+        StatusLabel.IsVisible = !string.IsNullOrWhiteSpace(message);
+    }
+
+    private void ClearStatus()
+    {
+        StatusLabel.Text = string.Empty;
+        StatusLabel.IsVisible = false;
     }
 
     private async Task RunBackgroundAnimationAsync(CancellationToken cancellationToken)

@@ -2,25 +2,25 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SolarGridOps.Maui.NavigationHubPage"
-             Title="Workspace">
+             Title="Help and Tools">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="12">
-            <Label Text="Feature Navigation"
+            <Label Text="Help and Quick Links"
                    FontFamily="OpenSansSemibold"
                    FontSize="24"
                    TextColor="#8A3A12" />
 
             <Border BackgroundColor="#FFF9EF" Stroke="#F0C79A" StrokeShape="RoundRectangle 14" Padding="14">
-                <Label Text="Inventory workflow is now available from the Inventory tab." />
+                <Label Text="Stock Management is available from the Inventory tab." />
             </Border>
 
             <Border BackgroundColor="#FFF9EF" Stroke="#F0C79A" StrokeShape="RoundRectangle 14" Padding="14">
-                <Label Text="Installation workflow is now available from the Installations tab." />
+                <Label Text="Installation progress and proof upload are available from the Installations tab." />
             </Border>
 
             <Border BackgroundColor="#FFF9EF" Stroke="#F0C79A" StrokeShape="RoundRectangle 14" Padding="14">
-                <Label Text="KPI dashboard is now available from the KPI tab." />
+                <Label Text="Operational alerts and business health are available from the Alerts tab." />
             </Border>
         </VerticalStackLayout>
     </ScrollView>

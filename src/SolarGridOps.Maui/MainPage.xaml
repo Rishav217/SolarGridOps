@@ -8,7 +8,7 @@
         <VerticalStackLayout Padding="18,14,18,20" Spacing="12">
             <Border BackgroundColor="#173A5E" StrokeThickness="0" StrokeShape="RoundRectangle 18" Padding="16">
                 <VerticalStackLayout Spacing="4">
-                    <Label Text="Operations Command Center" FontFamily="OpenSansSemibold" FontSize="22" TextColor="White" />
+                    <Label Text="Daily Operations Overview" FontFamily="OpenSansSemibold" FontSize="22" TextColor="White" />
                     <Label x:Name="WelcomeLabel" Text="Welcome" FontSize="14" TextColor="#CFE4FF" />
                 </VerticalStackLayout>
             </Border>
@@ -45,14 +45,14 @@
 
             <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="14">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Priority Queue" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#1A3F66" />
+                    <Label Text="Today's Priority Tasks" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#1A3F66" />
                     <Label Text="1. Approve closure requests pending more than 24 hours." TextColor="#35587A" />
                     <Label Text="2. Complete missing GPS proof for active installations." TextColor="#35587A" />
                     <Label Text="3. Reconcile panel movement variance before dispatch." TextColor="#35587A" />
                 </VerticalStackLayout>
             </Border>
 
-            <Button Text="Open Workspace" Clicked="OnWorkspaceClicked" BackgroundColor="#1F4F82" />
+            <Button Text="Open Help and Tools" Clicked="OnWorkspaceClicked" BackgroundColor="#1F4F82" />
             <Button Text="Sign Out" BackgroundColor="#AA4B2A" Clicked="OnSignOutClicked" />
         </VerticalStackLayout>
     </ScrollView>

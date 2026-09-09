@@ -32,14 +32,14 @@
             ContentTemplate="{DataTemplate local:InstallationWorkflowPage}" />
 
         <ShellContent
-            Title="KPI"
-            Route="kpi"
+            Title="Alerts"
+            Route="alerts"
             Icon="icon_kpi.svg"
             ContentTemplate="{DataTemplate local:KpiDashboardPage}" />
 
         <ShellContent
-            Title="Workspace"
-            Route="workspace"
+            Title="Help"
+            Route="help"
             Icon="icon_workspace.svg"
             ContentTemplate="{DataTemplate local:NavigationHubPage}" />
     </TabBar>

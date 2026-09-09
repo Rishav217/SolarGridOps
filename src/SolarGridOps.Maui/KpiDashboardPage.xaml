@@ -2,17 +2,17 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SolarGridOps.Maui.KpiDashboardPage"
-             Title="KPI Dashboard">
+             Title="Operations Alerts">
 
     <ScrollView>
         <VerticalStackLayout Padding="18,14,18,22" Spacing="12">
             <Border BackgroundColor="#163A60" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="14">
                 <VerticalStackLayout Spacing="3">
-                    <Label Text="KPI Intelligence"
+                    <Label Text="Operations Alerts"
                            FontFamily="OpenSansSemibold"
                            FontSize="24"
                            TextColor="White" />
-                    <Label Text="Financial, operations, and risk posture in one view."
+                    <Label Text="See business health signals and open the exact screen to fix them."
                            FontSize="13"
                            TextColor="#CFE4FF" />
                 </VerticalStackLayout>
@@ -49,12 +49,27 @@
                 </Border>
             </Grid>
 
+            <Border BackgroundColor="#FDEBEB" Stroke="#D64545" StrokeShape="RoundRectangle 14" Padding="14">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="High Priority Alerts" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#8D1C1C" />
+                    <Label Text="Panel stock is below safety level in 12 entries." TextColor="#9E1B1B" />
+                    <Button Text="Open Stock Alerts"
+                            BackgroundColor="#B83434"
+                            TextColor="White"
+                            Clicked="OnOpenStockAlertsClicked" />
+                </VerticalStackLayout>
+            </Border>
+
             <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="14">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Action Queue" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#1A3F66" />
                     <Label Text="1. Approve panel closure for SGO-PUNE-014" TextColor="#35587A" />
                     <Label Text="2. Upload GPS evidence for SGO-JPR-009" TextColor="#35587A" />
                     <Label Text="3. Review inverter stock movement mismatch" TextColor="#35587A" />
+                    <Button Text="Open Installation Tasks"
+                            BackgroundColor="#1F4F82"
+                            TextColor="White"
+                            Clicked="OnOpenInstallationsClicked" />
                 </VerticalStackLayout>
             </Border>
 
