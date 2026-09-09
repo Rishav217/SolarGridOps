@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using SolarGridOps.Application.Common;
+using SolarGridOps.Application.Features.AuditTrail;
 using SolarGridOps.Domain.Entities;
 
 namespace SolarGridOps.Application.Features.Auth;
@@ -10,12 +11,14 @@ public class AuthService : IAuthService
     private readonly IAuthRepository _authRepository;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IAuditTrailService _auditTrailService;
 
-    public AuthService(IAuthRepository authRepository, IJwtTokenService jwtTokenService, IPasswordHasher passwordHasher)
+    public AuthService(IAuthRepository authRepository, IJwtTokenService jwtTokenService, IPasswordHasher passwordHasher, IAuditTrailService auditTrailService)
     {
         _authRepository = authRepository;
         _jwtTokenService = jwtTokenService;
         _passwordHasher = passwordHasher;
+        _auditTrailService = auditTrailService;
     }
 
     public async Task<Result<AuthResponseDto>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
@@ -24,12 +27,14 @@ public class AuthService : IAuthService
         var user = await _authRepository.GetByIdentifierWithSecurityAsync(identifier, cancellationToken);
         if (user is null)
         {
+            await _auditTrailService.RecordAsync(null, "auth.login.failed", "user", null, $"identifier={identifier}", cancellationToken);
             return Result<AuthResponseDto>.Failure(Error.Unauthorized("Invalid credentials."));
         }
 
         var validPassword = _passwordHasher.Verify(request.Password, user.PasswordHash);
         if (!validPassword)
         {
+            await _auditTrailService.RecordAsync(user.Id, "auth.login.failed", "user", user.Id, "Incorrect password.", cancellationToken);
             return Result<AuthResponseDto>.Failure(Error.Unauthorized("Invalid credentials."));
         }
 
@@ -53,6 +58,8 @@ public class AuthService : IAuthService
 
         user.LastLoginAtUtc = DateTime.UtcNow;
         await _authRepository.SaveChangesAsync(cancellationToken);
+
+        await _auditTrailService.RecordAsync(user.Id, "auth.login.success", "user", user.Id, $"roles={string.Join(",", roles)}", cancellationToken);
 
         return Result<AuthResponseDto>.Success(new AuthResponseDto
         {
