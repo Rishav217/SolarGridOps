@@ -45,6 +45,19 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+    {
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (Guid.TryParse(userIdClaim, out var userId))
+        {
+            await _authService.LogoutAsync(userId, cancellationToken);
+        }
+
+        return NoContent();
+    }
+
+    [Authorize]
     [Authorize(Policy = PermissionPolicies.AuthCapabilities)]
     [HttpGet("capabilities")]
     public async Task<ActionResult<ApiResponse<CapabilitiesDto>>> Capabilities(CancellationToken cancellationToken)

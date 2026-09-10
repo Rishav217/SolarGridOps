@@ -1,8 +1,16 @@
+using System.Net.Http.Headers;
+
 namespace SolarGridOps.Maui.Services;
 
 public class SessionState
 {
+    private readonly HttpClient _httpClient;
     private readonly List<string> _roles = [];
+
+    public SessionState(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
 
     public bool IsAuthenticated => !string.IsNullOrWhiteSpace(AccessToken);
     public bool IsOwnerAdmin => _roles.Contains("owner_admin", StringComparer.OrdinalIgnoreCase);
@@ -19,6 +27,9 @@ public class SessionState
         {
             _roles.AddRange(roles.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()));
         }
+
+        // Every API client shares this HttpClient, so this is the single place tokens get attached.
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
     }
 
     public void Clear()
@@ -26,5 +37,7 @@ public class SessionState
         AccessToken = null;
         UserFullName = null;
         _roles.Clear();
+        _httpClient.DefaultRequestHeaders.Authorization = null;
     }
 }
+

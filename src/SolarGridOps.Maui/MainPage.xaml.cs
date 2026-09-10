@@ -6,10 +6,12 @@ namespace SolarGridOps.Maui;
 public partial class MainPage : ContentPage
 {
 	private readonly SessionState _sessionState;
+	private readonly AuthApiClient _authApiClient;
 	public MainPage()
 	{
 		InitializeComponent();
 		_sessionState = App.Services.GetRequiredService<SessionState>();
+		_authApiClient = App.Services.GetRequiredService<AuthApiClient>();
 	}
 
 	protected override void OnAppearing()
@@ -32,6 +34,7 @@ public partial class MainPage : ContentPage
 
 	private async void OnSignOutClicked(object? sender, EventArgs e)
 	{
+		await _authApiClient.LogoutAsync();
 		_sessionState.Clear();
 		await Shell.Current.GoToAsync("//login");
 	}
