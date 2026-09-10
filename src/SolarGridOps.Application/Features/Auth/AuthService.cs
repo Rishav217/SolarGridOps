@@ -120,6 +120,11 @@ public class AuthService : IAuthService
         });
     }
 
+    public async Task LogoutAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        await _auditTrailService.RecordAsync(userId, "auth.logout", "user", userId, null, cancellationToken);
+    }
+
     public async Task<Result<CapabilitiesDto>> GetCapabilitiesAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var user = await _authRepository.GetByIdWithSecurityAsync(userId, cancellationToken);

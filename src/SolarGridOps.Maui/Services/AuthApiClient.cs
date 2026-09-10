@@ -35,6 +35,18 @@ public class AuthApiClient
         return (true, null, payload.Data.FullName, payload.Data.AccessToken, payload.Data.Roles ?? []);
     }
 
+    public async Task LogoutAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _httpClient.PostAsync("api/v1/auth/logout", null, cancellationToken);
+        }
+        catch
+        {
+            // Logout locally regardless; server-side audit entry is best-effort.
+        }
+    }
+
     private sealed class LoginPayload
     {
         [JsonPropertyName("usernameOrMobile")]
