@@ -123,6 +123,15 @@
                         <Label Text="Sample login for pilot: owner@solargridops.local / Admin@123"
                                FontSize="12"
                                TextColor="#3D6288" />
+
+                        <Label x:Name="ServerAddressLabel"
+                               Text="Server: -"
+                               FontSize="12"
+                               TextColor="#3D6288">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnServerAddressTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

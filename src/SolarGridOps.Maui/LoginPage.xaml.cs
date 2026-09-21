@@ -9,6 +9,7 @@ public partial class LoginPage : ContentPage
     private static readonly Color InfoTextColor = Color.FromArgb("#1F4F82");
     private readonly AuthApiClient _authApiClient;
     private readonly SessionState _sessionState;
+    private readonly HttpClient _httpClient;
     private CancellationTokenSource? _backgroundAnimationCts;
 
     public LoginPage()
@@ -16,8 +17,10 @@ public partial class LoginPage : ContentPage
         InitializeComponent();
         _authApiClient = App.Services.GetRequiredService<AuthApiClient>();
         _sessionState = App.Services.GetRequiredService<SessionState>();
+        _httpClient = App.Services.GetRequiredService<HttpClient>();
         UsernameEntry.TextChanged += OnCredentialEdited;
         PasswordEntry.TextChanged += OnCredentialEdited;
+        ServerAddressLabel.Text = $"Server: {_httpClient.BaseAddress} (tap to change)";
     }
 
     protected override void OnAppearing()
@@ -38,6 +41,25 @@ public partial class LoginPage : ContentPage
     private void OnShowPasswordCheckedChanged(object? sender, CheckedChangedEventArgs e)
     {
         PasswordEntry.IsPassword = !e.Value;
+    }
+
+    private async void OnServerAddressTapped(object? sender, EventArgs e)
+    {
+        var current = _httpClient.BaseAddress?.ToString() ?? string.Empty;
+        var result = await DisplayPromptAsync(
+            "Server Address",
+            "Enter the API server address. On a real Android phone use your PC's LAN IP, e.g. http://192.168.1.20:5014/",
+            initialValue: current,
+            keyboard: Keyboard.Url);
+
+        if (string.IsNullOrWhiteSpace(result) || !Uri.TryCreate(result.Trim(), UriKind.Absolute, out var newUri))
+        {
+            return;
+        }
+
+        ApiEndpointService.SetBaseAddress(newUri.ToString());
+        _httpClient.BaseAddress = newUri;
+        ServerAddressLabel.Text = $"Server: {_httpClient.BaseAddress} (tap to change)";
     }
 
     private async void OnSignInClicked(object? sender, EventArgs e)
