@@ -11,6 +11,7 @@ public partial class LoginPage : ContentPage
     private readonly SessionState _sessionState;
     private readonly HttpClient _httpClient;
     private CancellationTokenSource? _backgroundAnimationCts;
+    private int _titleTapCount;
 
     public LoginPage()
     {
@@ -20,7 +21,6 @@ public partial class LoginPage : ContentPage
         _httpClient = App.Services.GetRequiredService<HttpClient>();
         UsernameEntry.TextChanged += OnCredentialEdited;
         PasswordEntry.TextChanged += OnCredentialEdited;
-        ServerAddressLabel.Text = $"Server: {_httpClient.BaseAddress} (tap to change)";
     }
 
     protected override void OnAppearing()
@@ -43,8 +43,17 @@ public partial class LoginPage : ContentPage
         PasswordEntry.IsPassword = !e.Value;
     }
 
-    private async void OnServerAddressTapped(object? sender, EventArgs e)
+    private async void OnAppTitleTapped(object? sender, EventArgs e)
     {
+        // Hidden gesture: tap the logo 5 times to reach server configuration, kept off the main screen intentionally.
+        _titleTapCount++;
+        if (_titleTapCount < 5)
+        {
+            return;
+        }
+
+        _titleTapCount = 0;
+
         var current = _httpClient.BaseAddress?.ToString() ?? string.Empty;
         var result = await DisplayPromptAsync(
             "Server Address",
@@ -59,7 +68,7 @@ public partial class LoginPage : ContentPage
 
         ApiEndpointService.SetBaseAddress(newUri.ToString());
         _httpClient.BaseAddress = newUri;
-        ServerAddressLabel.Text = $"Server: {_httpClient.BaseAddress} (tap to change)";
+        await DisplayAlert("Server Updated", $"Now using: {newUri}", "OK");
     }
 
     private async void OnSignInClicked(object? sender, EventArgs e)

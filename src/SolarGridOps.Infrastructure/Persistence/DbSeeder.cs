@@ -122,6 +122,7 @@ public static class DbSeeder
         }
 
         await SeedSampleDataAsync(db, cancellationToken);
+        await EnsureExpandedDemoDatasetAsync(db, user.Id, cancellationToken);
 
         await db.SaveChangesAsync(cancellationToken);
     }
@@ -409,6 +410,132 @@ public static class DbSeeder
                 FilePath = "sample/receipts/rcpt-sgo-2002.pdf",
                 Notes = "Full payment received"
             });
+    }
+
+    private static async Task EnsureExpandedDemoDatasetAsync(AppDbContext db, Guid technicianUserId, CancellationToken cancellationToken)
+    {
+        const int minimumProjectCount = 20;
+        var currentCount = await db.Projects.CountAsync(x => !x.IsDeleted, cancellationToken);
+        if (currentCount >= minimumProjectCount)
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+        var banks = new[] { "State Bank of India", "HDFC Bank", "ICICI Bank", "Axis Bank", "Punjab National Bank" };
+        var brands = new (string Brand, string Model, int Wattage, decimal InverterKva)[]
+        {
+            ("Waaree", "WSM-550", 550, 5.0m),
+            ("Adani Solar", "AS-540", 540, 6.0m),
+            ("Vikram Solar", "VS-555", 555, 8.0m),
+            ("Tata Power Solar", "TP-500", 500, 4.0m)
+        };
+
+        var demoEntries = new (string Name, string City, string State, decimal CapacityKw, ProjectPhase Phase, int PanelCount, int BrandIndex, InstallationClosureStatus ClosureStatus, bool CompletedForDay, int StartedDaysAgo)[]
+        {
+            ("Rakesh Kumar", "Lucknow", "Uttar Pradesh", 4.0m, ProjectPhase.Installation, 8, 3, InstallationClosureStatus.Open, false, 6),
+            ("Sunita Verma", "Nagpur", "Maharashtra", 6.5m, ProjectPhase.NetMeter, 12, 1, InstallationClosureStatus.ClosedApproved, true, 22),
+            ("Arvind Iyer", "Chennai", "Tamil Nadu", 10.0m, ProjectPhase.DCRFiling, 18, 2, InstallationClosureStatus.Open, true, 15),
+            ("Priya Nair", "Kochi", "Kerala", 3.5m, ProjectPhase.Agreement, 7, 0, InstallationClosureStatus.Open, false, 2),
+            ("Manoj Deshmukh", "Nashik", "Maharashtra", 5.0m, ProjectPhase.Installation, 9, 0, InstallationClosureStatus.ClosedPendingApproval, true, 5),
+            ("Kavita Joshi", "Indore", "Madhya Pradesh", 7.2m, ProjectPhase.Closed, 13, 1, InstallationClosureStatus.ClosedApproved, true, 40),
+            ("Suresh Reddy", "Hyderabad", "Telangana", 12.0m, ProjectPhase.Invoiced, 22, 2, InstallationClosureStatus.ClosedApproved, true, 30),
+            ("Anjali Mehta", "Ahmedabad", "Gujarat", 4.5m, ProjectPhase.NetMeter, 8, 0, InstallationClosureStatus.ClosedApproved, true, 20),
+            ("Vikram Singh", "Chandigarh", "Punjab", 6.0m, ProjectPhase.Installation, 11, 3, InstallationClosureStatus.ClosedPendingApproval, true, 7),
+            ("Deepa Pillai", "Trivandrum", "Kerala", 3.0m, ProjectPhase.Feasibility, 6, 1, InstallationClosureStatus.Open, false, 1),
+            ("Amitabh Choudhary", "Patna", "Bihar", 5.5m, ProjectPhase.Agreement, 10, 0, InstallationClosureStatus.Open, false, 3),
+            ("Ritu Bansal", "Ludhiana", "Punjab", 9.0m, ProjectPhase.DCRFiling, 16, 2, InstallationClosureStatus.Open, true, 17),
+            ("Harish Rao", "Bengaluru", "Karnataka", 8.0m, ProjectPhase.SubsidyProcessed, 15, 1, InstallationClosureStatus.ClosedApproved, true, 35),
+            ("Neha Kapoor", "Gurugram", "Haryana", 4.0m, ProjectPhase.Installation, 8, 3, InstallationClosureStatus.ClosedPendingApproval, true, 6),
+            ("Sanjay Bhatt", "Surat", "Gujarat", 6.8m, ProjectPhase.NetMeter, 12, 0, InstallationClosureStatus.ClosedApproved, true, 19),
+            ("Lakshmi Narayan", "Coimbatore", "Tamil Nadu", 11.0m, ProjectPhase.Invoiced, 20, 2, InstallationClosureStatus.ClosedApproved, true, 28),
+            ("Farhan Sheikh", "Bhopal", "Madhya Pradesh", 3.2m, ProjectPhase.Quotation, 6, 1, InstallationClosureStatus.Open, false, 1),
+            ("Geeta Rathi", "Jodhpur", "Rajasthan", 5.0m, ProjectPhase.Installation, 9, 0, InstallationClosureStatus.Open, true, 8),
+            ("Om Prakash Yadav", "Kanpur", "Uttar Pradesh", 7.5m, ProjectPhase.Closed, 14, 3, InstallationClosureStatus.ClosedApproved, true, 45),
+            ("Shalini Menon", "Mysuru", "Karnataka", 4.8m, ProjectPhase.Agreement, 9, 2, InstallationClosureStatus.Open, false, 4)
+        };
+
+        var toCreate = Math.Min(demoEntries.Length, minimumProjectCount - currentCount);
+        var phoneSeed = 96000_00000L;
+
+        for (var i = 0; i < toCreate; i++)
+        {
+            var entry = demoEntries[i];
+            var brand = brands[entry.BrandIndex];
+            var phone = (phoneSeed + (i * 111)).ToString();
+
+            var customer = new Customer
+            {
+                FullName = entry.Name,
+                PhoneNumber = phone,
+                Address = $"{entry.City} Main Road",
+                City = entry.City,
+                State = entry.State,
+                PanNumber = $"DEMO{i:0000}PAN",
+                BankName = banks[i % banks.Length],
+                BankAccountNumber = (100000000000L + (i * 987654)).ToString(),
+                BankIFSC = $"{banks[i % banks.Length][..4].ToUpperInvariant()}0{1000 + i}",
+                Notes = "Demo record for dashboard and reporting walkthroughs."
+            };
+            db.Customers.Add(customer);
+            await db.SaveChangesAsync(cancellationToken);
+
+            var project = new Project
+            {
+                CustomerId = customer.Id,
+                ProjectCode = $"SGO-DEMO-{(i + 1):000}",
+                CapacityKW = entry.CapacityKw,
+                CurrentPhase = entry.Phase,
+                InstallationStartDate = now.AddDays(-entry.StartedDaysAgo),
+                InstallationEndDate = entry.Phase == ProjectPhase.Closed ? now.AddDays(-entry.StartedDaysAgo + 10) : null,
+                SiteAddress = $"{entry.City}, {entry.State}",
+                Notes = "Seeded demo project with realistic values for pilot walkthroughs."
+            };
+            db.Projects.Add(project);
+            await db.SaveChangesAsync(cancellationToken);
+
+            var panelAssignments = new List<PanelAssignment>();
+            for (var p = 0; p < entry.PanelCount; p++)
+            {
+                panelAssignments.Add(new PanelAssignment
+                {
+                    ProjectId = project.Id,
+                    SerialNumber = $"SGOPNL-DEMO-{(i + 1):000}-{(p + 1):00}",
+                    Wattage = brand.Wattage,
+                    Brand = brand.Brand,
+                    Model = brand.Model,
+                    AssignedAtUtc = now.AddDays(-entry.StartedDaysAgo),
+                    Notes = "Demo panel assignment"
+                });
+            }
+            db.PanelAssignments.AddRange(panelAssignments);
+
+            db.InverterAssignments.Add(new InverterAssignment
+            {
+                ProjectId = project.Id,
+                SerialNumber = $"SGOINV-DEMO-{(i + 1):000}",
+                CapacityKva = brand.InverterKva,
+                Brand = brand.Brand,
+                Model = $"{brand.Model}-INV",
+                AssignedAtUtc = now.AddDays(-entry.StartedDaysAgo),
+                Notes = "Demo inverter assignment"
+            });
+
+            var session = new InstallationSession
+            {
+                ProjectId = project.Id,
+                TechnicianUserId = technicianUserId,
+                SessionDateUtc = now.AddDays(-Math.Max(entry.StartedDaysAgo - 1, 0)),
+                WorkSummary = $"Installation progress recorded for {entry.Name}'s {entry.CapacityKw}kW system.",
+                IsCompletedForDay = entry.CompletedForDay,
+                ClosureStatus = entry.ClosureStatus,
+                ClosureRequestedAtUtc = entry.ClosureStatus != InstallationClosureStatus.Open ? now.AddDays(-1) : null,
+                ClosureApprovedAtUtc = entry.ClosureStatus == InstallationClosureStatus.ClosedApproved ? now : null
+            };
+            db.InstallationSessions.Add(session);
+
+            await db.SaveChangesAsync(cancellationToken);
+        }
     }
 
     private static async Task SeedSampleDataFromFoldersAsync(AppDbContext db, string sampleRoot, CancellationToken cancellationToken)
