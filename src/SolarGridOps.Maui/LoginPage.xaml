@@ -52,10 +52,15 @@
                                HeightRequest="46"
                                VerticalOptions="Center" />
                         <VerticalStackLayout Grid.Column="1" Spacing="2">
-                            <Label Text="SolarGridOps"
+                            <Label x:Name="AppTitleLabel"
+                                   Text="SolarGridOps"
                                    FontFamily="OpenSansSemibold"
                                    FontSize="28"
-                                   TextColor="White" />
+                                   TextColor="White">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnAppTitleTapped" />
+                                </Label.GestureRecognizers>
+                            </Label>
                             <Label Text="Customer &amp; Field Portal"
                                    FontSize="13"
                                    TextColor="#E0EEFF" />
@@ -119,19 +124,6 @@
                                 BackgroundColor="#2F6FED"
                                 TextColor="White"
                                 Clicked="OnSignInClicked" />
-
-                        <Label Text="Sample login for pilot: owner@solargridops.local / Admin@123"
-                               FontSize="12"
-                               TextColor="#3D6288" />
-
-                        <Label x:Name="ServerAddressLabel"
-                               Text="Server: -"
-                               FontSize="12"
-                               TextColor="#3D6288">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnServerAddressTapped" />
-                            </Label.GestureRecognizers>
-                        </Label>
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

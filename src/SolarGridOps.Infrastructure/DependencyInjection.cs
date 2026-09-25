@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SolarGridOps.Application.Features.AuditTrail;
 using SolarGridOps.Application.Features.Auth;
 using SolarGridOps.Application.Features.Customers;
+using SolarGridOps.Application.Features.Dashboard;
 using SolarGridOps.Application.Features.Inventory;
 using SolarGridOps.Application.Features.Installations;
 using SolarGridOps.Application.Features.Logging;
@@ -44,6 +45,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthRepository, AuthRepository>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
+        services.AddScoped<IDashboardService, DashboardService>();
 
         return services;
     }

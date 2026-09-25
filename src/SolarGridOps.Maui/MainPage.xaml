@@ -29,7 +29,7 @@
                     </Border.GestureRecognizers>
                     <VerticalStackLayout>
                         <Label Text="Active Projects" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="12" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#1F4F82" />
+                        <Label x:Name="ActiveProjectsValueLabel" Text="-" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#1F4F82" />
                         <Label Text="Tap to view list" FontSize="11" TextColor="#7C9BC0" />
                     </VerticalStackLayout>
                 </Border>
@@ -43,7 +43,7 @@
                     </Border.GestureRecognizers>
                     <VerticalStackLayout>
                         <Label Text="Install Sessions" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="27" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#1F4F82" />
+                        <Label x:Name="InstallSessionsValueLabel" Text="-" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#1F4F82" />
                         <Label Text="Tap to view list" FontSize="11" TextColor="#7C9BC0" />
                     </VerticalStackLayout>
                 </Border>
@@ -57,7 +57,7 @@
                     </Border.GestureRecognizers>
                     <VerticalStackLayout>
                         <Label Text="Panels Assigned" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="344" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#1F4F82" />
+                        <Label x:Name="PanelsAssignedValueLabel" Text="-" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#1F4F82" />
                         <Label Text="Tap to view list" FontSize="11" TextColor="#7C9BC0" />
                     </VerticalStackLayout>
                 </Border>
@@ -71,7 +71,7 @@
                     </Border.GestureRecognizers>
                     <VerticalStackLayout>
                         <Label Text="Pending Closures" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="3" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#B04B22" />
+                        <Label x:Name="PendingClosuresValueLabel" Text="-" FontFamily="OpenSansSemibold" FontSize="25" TextColor="#B04B22" />
                         <Label Text="Tap to view list" FontSize="11" TextColor="#7C9BC0" />
                     </VerticalStackLayout>
                 </Border>
@@ -79,10 +79,8 @@
 
             <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="14">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Today's Priority Tasks" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#1A3F66" />
-                    <Label Text="1. Approve closure requests pending more than 24 hours." TextColor="#35587A" />
-                    <Label Text="2. Complete missing GPS proof for active installations." TextColor="#35587A" />
-                    <Label Text="3. Reconcile panel movement variance before dispatch." TextColor="#35587A" />
+                    <Label Text="Live Status" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#1A3F66" />
+                    <Label x:Name="LiveStatusLabel" Text="Loading real data from the server..." TextColor="#35587A" />
                 </VerticalStackLayout>
             </Border>
 

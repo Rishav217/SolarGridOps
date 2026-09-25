@@ -18,7 +18,7 @@
                            FontFamily="OpenSansSemibold"
                            FontSize="24"
                            TextColor="White" />
-                    <Label Text="See business health signals and open the exact screen to fix them."
+                    <Label Text="Live counts pulled directly from the database."
                            FontSize="13"
                            TextColor="#CFE4FF" />
                 </VerticalStackLayout>
@@ -27,73 +27,51 @@
             <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="10" RowSpacing="10">
                 <Border Grid.Row="0" Grid.Column="0" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 16" Padding="12">
                     <VerticalStackLayout>
-                        <Label Text="Collections" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="INR 6.8L" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#1FA463" />
-                        <Label Text="+11.2% vs last week" FontSize="12" TextColor="#1FA463" />
+                        <Label Text="Active Projects" FontSize="12" TextColor="#4B6D90" />
+                        <Label x:Name="ActiveProjectsValueLabel" Text="-" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#1FA463" />
                     </VerticalStackLayout>
                 </Border>
                 <Border Grid.Row="0" Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 16" Padding="12">
                     <VerticalStackLayout>
-                        <Label Text="Installations" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="18" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#F5A623" />
-                        <Label Text="3 pending closure" FontSize="12" TextColor="#F5A623" />
+                        <Label Text="Installation Sessions" FontSize="12" TextColor="#4B6D90" />
+                        <Label x:Name="InstallationSessionsValueLabel" Text="-" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#F5A623" />
                     </VerticalStackLayout>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="0" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 16" Padding="12">
                     <VerticalStackLayout>
-                        <Label Text="Panels in Stock" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="426" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#F5A623" />
-                        <Label Text="12 low-stock alerts" FontSize="12" TextColor="#F5A623" />
+                        <Label Text="Panels Assigned" FontSize="12" TextColor="#4B6D90" />
+                        <Label x:Name="PanelsAssignedValueLabel" Text="-" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#2F6FED" />
                     </VerticalStackLayout>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 16" Padding="12">
                     <VerticalStackLayout>
-                        <Label Text="Projects at Risk" FontSize="12" TextColor="#4B6D90" />
-                        <Label Text="2" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#E5484D" />
-                        <Label Text="Need owner follow-up" FontSize="12" TextColor="#E5484D" />
+                        <Label Text="Pending Approvals" FontSize="12" TextColor="#4B6D90" />
+                        <Label x:Name="PendingClosuresValueLabel" Text="-" FontFamily="OpenSansSemibold" FontSize="23" TextColor="#E5484D" />
                     </VerticalStackLayout>
                 </Border>
             </Grid>
 
             <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 16" Padding="14">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
-                    <VerticalStackLayout Grid.Column="0" Spacing="6">
-                        <Label Text="Stock Trend (30 days)" FontFamily="OpenSansSemibold" FontSize="14" TextColor="#1A3F66" />
-                        <GraphicsView x:Name="StockTrendGraphicsView" HeightRequest="90" WidthRequest="180" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Grid.Column="1" Spacing="6" HorizontalOptions="Center">
-                        <Label Text="Category Mix" FontFamily="OpenSansSemibold" FontSize="14" TextColor="#1A3F66" />
-                        <GraphicsView x:Name="CategoryDonutGraphicsView" HeightRequest="90" WidthRequest="90" />
-                    </VerticalStackLayout>
-                </Grid>
+                <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                    <Label Text="Tracked Assets Mix" FontFamily="OpenSansSemibold" FontSize="14" TextColor="#1A3F66" HorizontalOptions="Center" />
+                    <GraphicsView x:Name="CategoryDonutGraphicsView" HeightRequest="120" WidthRequest="120" />
+                    <Label x:Name="DonutLegendLabel" FontSize="11" TextColor="#4B6D90" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
             </Border>
 
             <Border BackgroundColor="#FDEBEB" Stroke="#D64545" StrokeShape="RoundRectangle 14" Padding="14">
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="High Priority Alerts" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#8D1C1C" />
-                    <Label Text="Panel stock is below safety level in 12 entries." TextColor="#9E1B1B" />
-                    <Button Text="Open Stock Alerts"
+                    <Label Text="Needs Attention" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#8D1C1C" />
+                    <Label x:Name="PendingApprovalsMessageLabel" Text="Loading..." TextColor="#9E1B1B" />
+                    <Button Text="Open Installations"
                             BackgroundColor="#B83434"
-                            TextColor="White"
-                            Clicked="OnOpenStockAlertsClicked" />
-                </VerticalStackLayout>
-            </Border>
-
-            <Border BackgroundColor="#FFFFFF" Stroke="#BED5F0" StrokeShape="RoundRectangle 14" Padding="14">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Action Queue" FontFamily="OpenSansSemibold" FontSize="18" TextColor="#1A3F66" />
-                    <Label Text="1. Approve panel closure for SGO-PUNE-014" TextColor="#35587A" />
-                    <Label Text="2. Upload GPS evidence for SGO-JPR-009" TextColor="#35587A" />
-                    <Label Text="3. Review inverter stock movement mismatch" TextColor="#35587A" />
-                    <Button Text="Open Installation Tasks"
-                            BackgroundColor="#2F6FED"
                             TextColor="White"
                             Clicked="OnOpenInstallationsClicked" />
                 </VerticalStackLayout>
             </Border>
 
             <Button Text="Refresh Snapshot" BackgroundColor="#2F6FED" Clicked="OnRefreshSnapshotClicked" />
-            <Label x:Name="StatusLabel" FontSize="13" TextColor="#315779" Text="Last synced: just now" />
+            <Label x:Name="StatusLabel" FontSize="13" TextColor="#315779" Text="Loading live data..." />
             </VerticalStackLayout>
         </Grid>
     </ScrollView>
